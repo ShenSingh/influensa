@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/app.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app.json" />
+              <option name="updatedContent" value="{&#10;  &quot;expo&quot;: {&#10;    &quot;name&quot;: &quot;influensa&quot;,&#10;    &quot;slug&quot;: &quot;influensa&quot;,&#10;    &quot;version&quot;: &quot;1.0.0&quot;,&#10;    &quot;orientation&quot;: &quot;portrait&quot;,&#10;    &quot;icon&quot;: &quot;./assets/icon.png&quot;,&#10;    &quot;userInterfaceStyle&quot;: &quot;light&quot;,&#10;    &quot;splash&quot;: {&#10;      &quot;image&quot;: &quot;./assets/splash.png&quot;,&#10;      &quot;resizeMode&quot;: &quot;contain&quot;,&#10;      &quot;backgroundColor&quot;: &quot;#ffffff&quot;&#10;    },&#10;    &quot;assetBundlePatterns&quot;: [&#10;      &quot;**/*&quot;&#10;    ],&#10;    &quot;ios&quot;: {&#10;      &quot;supportsTablet&quot;: true&#10;    },&#10;    &quot;android&quot;: {&#10;      &quot;adaptiveIcon&quot;: {&#10;        &quot;foregroundImage&quot;: &quot;./assets/adaptive-icon.png&quot;,&#10;        &quot;backgroundColor&quot;: &quot;#FFFFFF&quot;&#10;      }&#10;    },&#10;    &quot;web&quot;: {&#10;      &quot;favicon&quot;: &quot;./assets/favicon.png&quot;&#10;    }&#10;  }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/index.tsx">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/index.tsx" />
+              <option name="updatedContent" value="import React from 'react';&#10;import { View, Text, StyleSheet } from 'react-native';&#10;&#10;const App: React.FC = () =&gt; {&#10;  return (&#10;    &lt;View style={styles.container}&gt;&#10;      &lt;Text&gt;Hello, World!&lt;/Text&gt;&#10;    &lt;/View&gt;&#10;  );&#10;};&#10;&#10;const styles = StyleSheet.create({&#10;  container: {&#10;    flex: 1,&#10;    justifyContent: 'center',&#10;    alignItems: 'center',&#10;    backgroundColor: '#fff',&#10;  },&#10;});&#10;&#10;export default App;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/tsconfig.json">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/tsconfig.json" />
+              <option name="originalContent" value="{&#10;  // Visit https://aka.ms/tsconfig to read more about this file&#10;  &quot;compilerOptions&quot;: {&#10;    // File Layout&#10;    // &quot;rootDir&quot;: &quot;./src&quot;,&#10;    // &quot;outDir&quot;: &quot;./dist&quot;,&#10;&#10;    // Environment Settings&#10;    // See also https://aka.ms/tsconfig/module&#10;    &quot;module&quot;: &quot;esnext&quot;,&#10;    &quot;target&quot;: &quot;esnext&quot;,&#10;    &quot;types&quot;: [],&#10;    // For nodejs:&#10;    // &quot;lib&quot;: [&quot;esnext&quot;],&#10;    // &quot;types&quot;: [&quot;node&quot;],&#10;    // and npm install -D @types/node&#10;&#10;    // Other Outputs&#10;    &quot;sourceMap&quot;: true,&#10;    &quot;declaration&quot;: true,&#10;    &quot;declarationMap&quot;: true,&#10;&#10;    // Stricter Typechecking Options&#10;    &quot;noUncheckedIndexedAccess&quot;: true,&#10;    &quot;exactOptionalPropertyTypes&quot;: true,&#10;&#10;    // Style Options&#10;    // &quot;noImplicitReturns&quot;: true,&#10;    // &quot;noImplicitOverride&quot;: true,&#10;    // &quot;noUnusedLocals&quot;: true,&#10;    // &quot;noUnusedParameters&quot;: true,&#10;    // &quot;noFallthroughCasesInSwitch&quot;: true,&#10;    // &quot;noPropertyAccessFromIndexSignature&quot;: true,&#10;&#10;    // Recommended Options&#10;    &quot;strict&quot;: true,&#10;    &quot;jsx&quot;: &quot;react-jsx&quot;,&#10;    &quot;isolatedModules&quot;: true,&#10;    &quot;noUncheckedSideEffectImports&quot;: true,&#10;    &quot;moduleDetection&quot;: &quot;force&quot;,&#10;    &quot;skipLibCheck&quot;: true,&#10;  }&#10;}&#10;" />
+              <option name="updatedContent" value="{&#10;  &quot;extends&quot;: &quot;expo/tsconfig.base&quot;,&#10;  &quot;compilerOptions&quot;: {&#10;    &quot;strict&quot;: true,&#10;    &quot;allowSyntheticDefaultImports&quot;: true,&#10;    &quot;jsx&quot;: &quot;react-jsx&quot;,&#10;    &quot;lib&quot;: [&quot;dom&quot;, &quot;esnext&quot;],&#10;    &quot;moduleResolution&quot;: &quot;node&quot;,&#10;    &quot;skipLibCheck&quot;: true,&#10;    &quot;resolveJsonModule&quot;: true,&#10;    &quot;allowJs&quot;: true,&#10;    &quot;esModuleInterop&quot;: true,&#10;    &quot;isolatedModules&quot;: true&#10;  }&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

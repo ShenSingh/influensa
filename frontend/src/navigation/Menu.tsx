@@ -10,7 +10,7 @@ import {
 
 import Screens from './Screens';
 import {Block, Text, Switch, Button, Image} from '../components';
-import {useData, useTheme, useTranslation} from '../hooks';
+import {useData, useTheme} from '../hooks';
 
 const Drawer = createDrawerNavigator();
 
@@ -65,8 +65,6 @@ const DrawerContent = (
   props: DrawerContentComponentProps,
 ) => {
   const {navigation} = props;
-  const {t} = useTranslation();
-  const {isDark, handleIsDark} = useData();
   const [active, setActive] = useState('Home');
   const {assets, colors, gradients, sizes} = useTheme();
   const labelColor = colors.text;
@@ -84,14 +82,11 @@ const DrawerContent = (
 
   // screen list for Drawer menu
   const screens = [
-    {name: t('screens.home'), to: 'Home', icon: assets.home},
-    {name: t('screens.components'), to: 'Components', icon: assets.components},
-    {name: t('screens.articles'), to: 'Articles', icon: assets.document},
-    {name: t('screens.rental'), to: 'Pro', icon: assets.rental},
-    {name: t('screens.profile'), to: 'Profile', icon: assets.profile},
-    {name: t('screens.settings'), to: 'Pro', icon: assets.settings},
-    {name: t('screens.register'), to: 'Register', icon: assets.register},
-    {name: t('screens.extra'), to: 'Pro', icon: assets.extras},
+    {name: 'Home', to: 'Home', icon: assets.home},
+    {name: 'Components', to: 'Components', icon: assets.components},
+    {name: 'Articles', to: 'Articles', icon: assets.document},
+    {name: 'Profile', to: 'Profile', icon: assets.profile},
+    {name: 'Register', to: 'Register', icon: assets.register},
   ];
 
   return (
@@ -113,10 +108,10 @@ const DrawerContent = (
           />
           <Block>
             <Text size={12} semibold>
-              {t('app.name')}
+              App Name
             </Text>
             <Text size={12} semibold>
-              {t('app.native')}
+              Native
             </Text>
           </Block>
         </Block>
@@ -162,49 +157,66 @@ const DrawerContent = (
           gradient={gradients.menu}
         />
 
-        <Text semibold transform="uppercase" opacity={0.5}>
-          {t('menu.documentation')}
-        </Text>
-
-        <Button
-          row
-          justify="flex-start"
-          marginTop={sizes.sm}
-          marginBottom={sizes.s}
-          onPress={() =>
-            handleWebLink('https://github.com/creativetimofficial')
-          }>
-          <Block
-            flex={0}
-            radius={6}
-            align="center"
+        {/* Styled Sign Out Button */}
+        <Block marginTop={sizes.md}>
+          <Button
+            row
             justify="center"
-            width={sizes.md}
-            height={sizes.md}
-            marginRight={sizes.s}
-            gradient={gradients.white}>
-            <Image
-              radius={0}
-              width={14}
-              height={14}
-              color={colors.black}
-              source={assets.documentation}
-            />
-          </Block>
-          <Text p color={labelColor}>
-            {t('menu.started')}
-          </Text>
-        </Button>
-
-        <Block row justify="space-between" marginTop={sizes.sm}>
-          <Text color={labelColor}>{t('darkMode')}</Text>
-          <Switch
-            checked={isDark}
-            onPress={(checked) => {
-              handleIsDark(checked);
-              Alert.alert(t('pro.title'), t('pro.alert'));
+            align="center"
+            radius={sizes.buttonRadius}
+            gradient={gradients.danger}
+            shadow={false}
+            onPress={() => {
+              Alert.alert(
+                'Sign Out',
+                'Are you sure you want to sign out?',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Sign Out',
+                    style: 'destructive',
+                    onPress: () => {
+                      // Add your sign out logic here
+                      console.log('User signed out');
+                      // navigation.navigate('Login'); // Example navigation
+                    },
+                  },
+                ],
+                { cancelable: true }
+              );
             }}
-          />
+          >
+            <Text color={colors.white} semibold>
+              Sign Out
+            </Text>
+          </Button>
+        </Block>
+
+        {/* Developer Credit Section */}
+        <Block
+          align="center"
+          marginTop={sizes.l}
+          marginBottom={5}
+        >
+          <Text semibold opacity={0.5} marginBottom={sizes.xs}>
+            Developed by
+          </Text>
+          <Button
+            onPress={() => handleWebLink('https://github.com/ShenSingh')}
+            paddingVertical={sizes.xs}
+            paddingHorizontal={sizes.s}
+          >
+            <Text
+              semibold
+              color={colors.primary}
+              transform="none"
+            >
+              ShenSingh
+            </Text>
+          </Button>
         </Block>
       </Block>
     </DrawerContentScrollView>
@@ -213,10 +225,9 @@ const DrawerContent = (
 
 /* drawer menu navigation */
 export default () => {
-  const {gradients} = useTheme();
 
   return (
-    <Block gradient={gradients.light}>
+    <Block >
       <Drawer.Navigator
         screenOptions={{
           drawerStyle: {
@@ -229,12 +240,12 @@ export default () => {
           overlayColor: 'transparent',
         }}
         drawerContent={(props) => <DrawerContent {...props} />}>
-        <Drawer.Screen 
-          name="Screens" 
+        <Drawer.Screen
+          name="Screens"
           component={ScreensStack}
           options={{
             headerShown: false
-          }} 
+          }}
         />
       </Drawer.Navigator>
     </Block>

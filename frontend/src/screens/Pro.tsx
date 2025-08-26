@@ -1,11 +1,10 @@
 import React, {useCallback, useEffect} from 'react';
 import {Linking, StatusBar} from 'react-native';
 
-import {useTheme, useTranslation} from '../hooks';
+import {useTheme} from '../hooks';
 import {Block, Button, Image, Text} from '../components';
 
 const Pro = () => {
-  const {t} = useTranslation();
   const {assets, colors, gradients, sizes} = useTheme();
 
   useEffect(() => {
@@ -26,18 +25,18 @@ const Pro = () => {
       <Block safe justify="center">
         <Block card flex={0} padding={sizes.sm} marginBottom={sizes.sm}>
           <Text h4 center semibold marginBottom={sizes.sm}>
-            {t('pro.title')}
+            Pro
           </Text>
 
-          <Text marginBottom={sizes.padding}>{t('pro.appTemplate')}</Text>
+          <Text marginBottom={sizes.padding}>App Template</Text>
 
-          <Text semibold>{t('pro.components', {count: 11})}</Text>
-          <Text semibold>{t('pro.screens', {count: 18})}</Text>
-          <Text semibold>{t('pro.support')}</Text>
+          <Text semibold>11 Components</Text>
+          <Text semibold>18 Screens</Text>
+          <Text semibold>Support</Text>
 
-          <Text marginVertical={sizes.padding}>{t('pro.saveTime')}</Text>
+          <Text marginVertical={sizes.padding}>Save Time</Text>
 
-          <Text>{t('pro.takeAdvantage')}</Text>
+          <Text>Take Advantage</Text>
 
           <Block
             row
@@ -64,7 +63,7 @@ const Pro = () => {
               )
             }>
             <Text white bold transform="uppercase">
-              {t('pro.buyNow')}
+              Buy Now
             </Text>
           </Button>
         </Block>

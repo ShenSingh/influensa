@@ -1,65 +1,62 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Platform, Text as RNText, Linking} from 'react-native';
+import {Platform, Text as RNText} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
 
 import {useTheme} from '../hooks';
 import * as regex from '../constants/regex';
-import {Block, Button, Input, Image, Text, Checkbox} from '../components';
+import {Block, Button, Input, Image, Text} from '../components';
 
 const isAndroid = Platform.OS === 'android';
 
-interface IRegistration {
-  name: string;
+interface ILogin {
   email: string;
   password: string;
-  agreed: boolean;
 }
-interface IRegistrationValidation {
-  name: boolean;
+interface ILoginValidation {
   email: boolean;
   password: boolean;
-  agreed: boolean;
 }
 
-const Register = () => {
+const Login = () => {
   const navigation = useNavigation();
-  const [isValid, setIsValid] = useState<IRegistrationValidation>({
-    name: false,
+  const [isValid, setIsValid] = useState<ILoginValidation>({
     email: false,
     password: false,
-    agreed: false,
   });
-  const [registration, setRegistration] = useState<IRegistration>({
-    name: '',
+  const [login, setLogin] = useState<ILogin>({
     email: '',
     password: '',
-    agreed: false,
   });
   const {assets, colors, gradients, sizes} = useTheme();
 
   const handleChange = useCallback(
     (value: any) => {
-      setRegistration((state) => ({...state, ...value}));
+      setLogin((state) => ({...state, ...value}));
     },
-    [setRegistration],
+    [setLogin],
   );
 
-  const handleSignUp = useCallback(() => {
+  const handleSignIn = useCallback(() => {
     if (!Object.values(isValid).includes(false)) {
-      /** send/save registratin data */
-      console.log('handleSignUp', registration);
+      /** send/save login data */
+      console.log('handleSignIn', login);
+      // Add your login logic here
+      // navigation.navigate('Home');
     }
-  }, [isValid, registration]);
+  }, [isValid, login]);
+
+  const handleForgotPassword = useCallback(() => {
+    // Add forgot password logic here
+    console.log('Forgot password clicked');
+  }, []);
 
   useEffect(() => {
     setIsValid((state) => ({
       ...state,
-      name: regex.name.test(registration.name),
-      email: regex.email.test(registration.email),
-      password: regex.password.test(registration.password),
-      agreed: registration.agreed,
+      email: regex.email.test(login.email),
+      password: regex.password.test(login.password),
     }));
-  }, [registration, setIsValid]);
+  }, [login, setIsValid]);
 
   return (
     <Block safe marginTop={sizes.md}>
@@ -104,7 +101,7 @@ const Register = () => {
             </RNText>
           </Image>
         </Block>
-        {/* register form */}
+        {/* login form */}
         <Block
           keyboard
           behavior={!isAndroid ? 'padding' : 'height'}
@@ -124,24 +121,33 @@ const Register = () => {
               justify="space-evenly"
               tint={colors.blurTint}
               paddingVertical={sizes.sm}>
-              <RNText
+
+              <Block
+                flex={0}
+                align="center"
+                justify="center"
+                marginBottom={sizes.s}
+                paddingTop={sizes.l}>
+                <RNText
                   style={{
                     color: '#FFFFFF',
                     letterSpacing: 1,
                     textTransform: 'uppercase',
                     fontSize: 24,
-                    textAlign: 'center',
-                    marginTop:sizes.m
+                    textAlign: 'center'
                   }}>
-                Sign Up
-              </RNText>
+                  Sign In
+                </RNText>
+              </Block>
+
               <Block
-                row
-                flex={0}
-                align="center"
-                justify="center"
-                marginBottom={sizes.xxl}
-                paddingHorizontal={sizes.xxl}>
+                  row
+                  flex={0}
+                  align="center"
+                  justify="center"
+                  marginBottom={sizes.xxl}
+                  // paddingBottom={sizes.xxl}
+                  paddingHorizontal={sizes.xxl}>
 
               </Block>
               {/* form inputs */}
@@ -149,20 +155,11 @@ const Register = () => {
                 <Input
                   autoCapitalize="none"
                   marginBottom={sizes.m}
-                  label="Name"
-                  placeholder="Enter your name"
-                  success={Boolean(registration.name && isValid.name)}
-                  danger={Boolean(registration.name && !isValid.name)}
-                  onChangeText={(value) => handleChange({name: value})}
-                />
-                <Input
-                  autoCapitalize="none"
-                  marginBottom={sizes.m}
                   label="Email"
                   keyboardType="email-address"
                   placeholder="Enter your email"
-                  success={Boolean(registration.email && isValid.email)}
-                  danger={Boolean(registration.email && !isValid.email)}
+                  success={Boolean(login.email && isValid.email)}
+                  danger={Boolean(login.email && !isValid.email)}
                   onChangeText={(value) => handleChange({email: value})}
                 />
                 <Input
@@ -172,47 +169,40 @@ const Register = () => {
                   label="Password"
                   placeholder="Enter your password"
                   onChangeText={(value) => handleChange({password: value})}
-                  success={Boolean(registration.password && isValid.password)}
-                  danger={Boolean(registration.password && !isValid.password)}
+                  success={Boolean(login.password && isValid.password)}
+                  danger={Boolean(login.password && !isValid.password)}
                 />
               </Block>
-              {/* checkbox terms */}
-              <Block row flex={0} align="center" paddingHorizontal={sizes.sm}>
-                <Checkbox
-                  marginRight={sizes.sm}
-                  checked={registration?.agreed}
-                  onPress={(value) => handleChange({agreed: value})}
-                />
-                <Text paddingRight={sizes.s}>
-                  I agree to the{' '}
-                  <Text
-                    semibold
-                    onPress={() => {
-                      Linking.openURL('https://www.creative-tim.com/terms');
-                    }}>
-                    Terms & Conditions
+
+              {/* forgot password */}
+              <Block flex={0} align="flex-end" paddingHorizontal={sizes.sm}>
+                <Button onPress={handleForgotPassword}>
+                  <Text p primary semibold>
+                    Forgot Password?
                   </Text>
-                </Text>
+                </Button>
               </Block>
+
               <Button
-                onPress={handleSignUp}
+                onPress={handleSignIn}
                 marginVertical={sizes.s}
                 marginHorizontal={sizes.sm}
                 gradient={gradients.primary}
                 disabled={Object.values(isValid).includes(false)}>
                 <Text bold white transform="uppercase">
-                  Sign Up
+                  Sign In
                 </Text>
               </Button>
+
               <Button
                 primary
                 outlined
                 shadow={!isAndroid}
                 marginVertical={sizes.s}
                 marginHorizontal={sizes.sm}
-                onPress={() => navigation.navigate(`Login`)}>
+                onPress={() => navigation.navigate('Register')}>
                 <Text bold primary transform="uppercase">
-                  Sign In
+                  Create Account
                 </Text>
               </Button>
             </Block>
@@ -223,4 +213,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

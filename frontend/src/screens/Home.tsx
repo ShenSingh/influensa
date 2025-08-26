@@ -1,10 +1,11 @@
 import React, {useCallback, useState} from 'react';
+import {ScrollView} from 'react-native';
 
-import {useData, useTheme, useTranslation} from '../hooks';
+import {useData, useTheme} from '../hooks';
 import {Block, Button, Image, Input, Product, Text} from '../components';
+import BestInfluencer from "../components/BestInfluencer";
 
 const Home = () => {
-  const {t} = useTranslation();
   const [tab, setTab] = useState<number>(0);
   const {following, trending} = useData();
   const [products, setProducts] = useState(following);
@@ -22,7 +23,7 @@ const Home = () => {
     <Block>
       {/* search input */}
       <Block color={colors.card} flex={0} padding={sizes.padding}>
-        <Input search placeholder={t('common.search')} />
+        <Input search placeholder="Search" />
       </Block>
 
       {/* toggle products list */}
@@ -47,7 +48,7 @@ const Home = () => {
               <Image source={assets.extras} color={colors.white} radius={0} />
             </Block>
             <Text p font={fonts?.[tab === 0 ? 'medium' : 'normal']}>
-              {t('home.following')}
+              Following
             </Text>
           </Block>
         </Button>
@@ -76,18 +77,45 @@ const Home = () => {
               />
             </Block>
             <Text p font={fonts?.[tab === 1 ? 'medium' : 'normal']}>
-              {t('home.trending')}
+              Trending
             </Text>
           </Block>
         </Button>
       </Block>
 
-      {/* products list */}
       <Block
         scroll
         paddingHorizontal={sizes.padding}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingBottom: sizes.l}}>
+        {/*best influencers*/}
+        <Text
+        p
+        font={fonts?.medium}
+        marginTop={sizes.sm}
+        >
+          Top Influencers
+        </Text>
+        <Block marginTop={sizes.sm}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: sizes.padding,
+            }}>
+            {products?.map((product) => (
+              <BestInfluencer {...product} key={`card-${product?.id}`} />
+            ))}
+          </ScrollView>
+        </Block>
+        <Text
+            p
+            font={fonts?.medium}
+            marginTop={sizes.sm}
+        >
+          Influencers
+        </Text>
+        {/*influencers*/}
         <Block row wrap="wrap" justify="space-between" marginTop={sizes.sm}>
           {products?.map((product) => (
             <Product {...product} key={`card-${product?.id}`} />

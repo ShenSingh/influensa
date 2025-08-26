@@ -1,26 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import {ITheme} from '../constants/types';
 
-import {light} from '../constants';
-import {ITheme, IThemeProvider} from '../constants/types';
-
-export const ThemeContext = React.createContext({
-  theme: light,
-  setTheme: () => {},
-});
+export const ThemeContext = React.createContext<ITheme>({} as ITheme);
 
 export const ThemeProvider = ({
-  children,
-  theme = light,
-  setTheme = () => {},
-}: IThemeProvider) => {
-  return (
-    <ThemeContext.Provider value={{theme, setTheme}}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
+                                  children,
+                                  theme,
+                                  setTheme
+                              }: {
+    children: React.ReactNode,
+    theme: ITheme,
+    setTheme?: (theme?: ITheme) => void
+}) => <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 
-export default function useTheme(): ITheme {
-  const {theme} = React.useContext(ThemeContext);
-  return theme;
-}
+export default () => useContext(ThemeContext);

@@ -83,10 +83,13 @@ const DrawerContent = (
   // screen list for Drawer menu
   const screens = [
     {name: 'Home', to: 'Home', icon: assets.home},
-    {name: 'Components', to: 'Components', icon: assets.components},
-    {name: 'Articles', to: 'Articles', icon: assets.document},
     {name: 'Profile', to: 'Profile', icon: assets.profile},
-    {name: 'Register', to: 'Register', icon: assets.register},
+    {name: 'Influencer', to: 'Influencer', icon: assets.basket},
+    {name: 'Business', to: 'Business', icon: assets.articles},
+
+    // {name: 'Components', to: 'Components', icon: assets.components},
+    // {name: 'Articles', to: 'Articles', icon: assets.document},
+    // {name: 'Register', to: 'Register', icon: assets.register},
   ];
 
   return (

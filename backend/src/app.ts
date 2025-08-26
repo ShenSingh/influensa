@@ -1,29 +1,36 @@
-import express from 'express';
-import cors from 'cors';
+import express from "express"
+import dotenv from "dotenv"
+import cors from "cors"
+import cookieParser from "cookie-parser";
+import rootRouter from "./router";
+import {errorHandler} from "./middlwares /errorHandler";
+import {connectDB} from "./db/mongoDb";
 
-const app = express();
+dotenv.config()
+const app = express()
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+const corsOptions = {
+    origin: process.env.CLIENT_ORGIN,
+    credentials: true,
+    methods: ["GET", "PUT", "POST", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
+};
 
-// Basic health check route
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        message: 'Server is running!',
-        timestamp: new Date().toISOString()
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use(cookieParser())
+
+app.set('trust proxy', true);
+
+const PORT = process.env.PORT;
+
+app.use("/api",rootRouter)
+
+app.use(errorHandler)
+
+connectDB().then(r => {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
     });
-});
+})
 
-// Basic API route
-app.get('/api', (req, res) => {
-    res.json({ message: 'Welcome to the Influensa API' });
-});
-
-// 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({ message: 'Route not found' });
-});
-
-export default app;

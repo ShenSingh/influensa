@@ -23,7 +23,7 @@ const Home = () => {
     <Block>
       {/* search input */}
       <Block color={colors.card} flex={0} padding={sizes.padding}>
-        <Input search placeholder="Search" />
+        <Input search placeholder="Search Influencer" />
       </Block>
 
       {/* toggle products list */}

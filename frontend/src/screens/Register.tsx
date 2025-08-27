@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Platform, Text as RNText, Linking} from 'react-native';
+import {Platform, Linking} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
 
 import {useTheme} from '../hooks';
@@ -76,7 +76,13 @@ const Register = () => {
               row
               flex={0}
               justify="flex-start"
-              onPress={() => navigation.goBack()}>
+              onPress={() => {
+                if (navigation.canGoBack()) {
+                  navigation.goBack();
+                } else {
+                  navigation.navigate('Screens', { screen: 'Home' });
+                }
+              }}>
               <Image
                 radius={0}
                 width={10}
@@ -90,18 +96,23 @@ const Register = () => {
               </Text>
             </Button>
 
-            <RNText
-                style={{
-                  color: '#FFFFFF',
-                  fontFamily: 'OpenSans-ExtraBold',
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  fontSize: 30,
-                  fontWeight: 'bold',
-                  textAlign: 'center'
-                }}>
+            <Text
+              p
+              semibold
+              center
+              color={colors.white}
+              paddingTop={sizes.xl}
+              size={sizes.m}
+              style={{
+                fontFamily: 'OpenSans-ExtraBold',
+                letterSpacing: 1,
+                textTransform: 'uppercase',
+                fontSize: 30,
+                fontWeight: 'bold',
+              }}
+            >
               INFLUENZA
-            </RNText>
+            </Text>
           </Image>
         </Block>
         {/* register form */}
@@ -124,7 +135,7 @@ const Register = () => {
               justify="space-evenly"
               tint={colors.blurTint}
               paddingVertical={sizes.sm}>
-              <RNText
+              <Text
                   style={{
                     color: '#FFFFFF',
                     letterSpacing: 1,
@@ -134,7 +145,7 @@ const Register = () => {
                     marginTop:sizes.m
                   }}>
                 Sign Up
-              </RNText>
+              </Text>
               <Block
                 row
                 flex={0}

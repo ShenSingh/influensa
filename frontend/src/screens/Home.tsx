@@ -102,9 +102,15 @@ const Home = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               paddingHorizontal: sizes.padding,
+              gap: sizes.sm, // Add space between cards
             }}>
-            {products?.map((product) => (
-              <BestInfluencer {...product} key={`card-${product?.id}`} />
+            {products?.map((product, index) => (
+              <Block
+                key={`card-${product?.id}`}
+                marginRight={index < products.length - 1 ? sizes.sm : 0}
+              >
+                <BestInfluencer {...product} />
+              </Block>
             ))}
           </ScrollView>
         </Block>

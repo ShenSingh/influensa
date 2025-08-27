@@ -184,7 +184,7 @@ const DrawerContent = (
                     onPress: () => {
                       // Add your sign out logic here
                       console.log('User signed out');
-                      // navigation.navigate('Login'); // Example navigation
+                      navigation.navigate('Screens', { screen: 'Login' });
                     },
                   },
                 ],

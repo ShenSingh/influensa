@@ -4,12 +4,12 @@ export default {
     slug: "Influenza",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/logo/black-logo.png",
     scheme: "Influenza",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
-      image: "./assets/images/splash-icon.png",
+      image: "./assets/images/logo/black-logo.png",
       resizeMode: "contain",
       backgroundColor: "#6E44FF"
     },
@@ -22,7 +22,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./assets/images/logo/black-logo.png",
         backgroundColor: "#ffffff"
       },
       edgeToEdgeEnabled: true,
@@ -31,14 +31,14 @@ export default {
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/favicon.png"
+      favicon: "./assets/images/logo/black-logo.png"
     },
     plugins: [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          image: "./assets/images/splash-icon.png",
+          image:"./assets/images/logo/black-logo.png",
           imageWidth: 200,
           resizeMode: "contain",
           backgroundColor: "#6E44FF"

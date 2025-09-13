@@ -32,6 +32,10 @@ export  const TopInfluencers = () => {
                     <Text className="text-lg font-bold text-gray-900">Top Influencers</Text>
                     <TouchableOpacity
 
+                        onPress={() => {
+                            // Navigate to full influencers list page
+                            router.push("/(dashboard)/influencerScreen");
+                        }}
                     >
                         <Text className="text-indigo-600 font-medium">See all</Text>
                     </TouchableOpacity>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { Search, User, Star, MapPin, DollarSign } from 'lucide-react-native';
+import FooterNav from "@/components/FooterNav";
+import {AppName} from "@/components/AppName";
 
 export default function MatchInfluencerScreen() {
     const [businessDetails, setBusinessDetails] = useState('');
@@ -60,9 +62,12 @@ export default function MatchInfluencerScreen() {
     };
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-white">
             {/* Header */}
-            <View className="bg-indigo-600 p-6 rounded-b-3xl">
+            <View className="bg-indigo-600 p-6 pt-12 rounded-b-3xl">
+                <View className="flex-row items-center justify-between mt-10">
+                    <AppName fontSize={32} color="#fff" />
+                </View>
                 <Text className="text-2xl font-bold text-white mt-8">AI Influencer Match</Text>
                 <Text className="text-indigo-100 mt-2">Describe your business to find perfect influencer matches</Text>
             </View>
@@ -144,6 +149,8 @@ export default function MatchInfluencerScreen() {
                     </View>
                 )}
             </ScrollView>
+            <FooterNav />
+
         </View>
     );
 }

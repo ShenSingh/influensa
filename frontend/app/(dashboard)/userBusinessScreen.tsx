@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Save, Building, Users, Target, Phone, Mail } from 'lucide-react-native';
+import FooterNav from "@/components/FooterNav";
+import {AppName} from "@/components/AppName";
 
 export default function UserBusinessScreen() {
     const [businessName, setBusinessName] = useState('');
@@ -30,7 +32,10 @@ export default function UserBusinessScreen() {
     return (
         <View className="flex-1 bg-gray-50">
             {/* Header */}
-            <View className="bg-indigo-600 p-6 rounded-b-3xl">
+            <View className="bg-indigo-600 p-6 pt-12 rounded-b-3xl">
+                <View className="flex-row items-center justify-between mt-10">
+                    <AppName fontSize={32} color="#fff" />
+                </View>
                 <Text className="text-2xl font-bold text-white mt-8">Business Profile</Text>
                 <Text className="text-indigo-100 mt-2">Manage your business information</Text>
             </View>
@@ -145,6 +150,7 @@ export default function UserBusinessScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+            <FooterNav />
         </View>
     );
 }

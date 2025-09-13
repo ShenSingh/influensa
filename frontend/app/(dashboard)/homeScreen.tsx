@@ -1,29 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView } from 'react-native';
-import { Search, Filter, Star, User, Settings, Bell, ChevronRight } from 'lucide-react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { Search, Filter, User } from 'lucide-react-native';
 import { router } from "expo-router";
 import FooterNav from "@/components/FooterNav";
 import {TopInfluencers} from "@/components/TopInfluencers";
 import {RecentMatchesInfluencers} from "@/components/RecentMatchesInfluencers";
+import {AppName} from "@/components/AppName";
+import AppleFooterNav from "@/components/AppleFooterNav";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleInfluencerPress = (influencer: any) => {
-    // For now, navigate to influencer profile page instead of bottom sheet
-    router.push("/(dashboard)/influencerProfileScreen");
-  };
-
   return (
-      <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 bg-white">
         {/* Header */}
-        <View className="bg-indigo-600 px-4 pt-12 pb-4">
+        <View className="bg-indigo-600 px-4 pt-12 pb-4 rounded-b-3xl">
           <View className="flex-row items-center justify-between mt-10">
-            <Text className="text-white text-2xl font-bold">InfluenceConnect</Text>
-            <View className="flex-row space-x-4">
-              <Bell color="white" size={24} />
-              <Settings color="white" size={24} />
-            </View>
+            <AppName fontSize={32} color="#fff" />
           </View>
 
           {/* Search Bar */}
@@ -76,8 +69,9 @@ const HomeScreen = () => {
           </View>
         </ScrollView>
 
-        <FooterNav />
-      </SafeAreaView>
+        {/*<FooterNav />*/}
+        <AppleFooterNav />
+      </View>
   );
 };
 

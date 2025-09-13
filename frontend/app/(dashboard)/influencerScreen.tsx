@@ -4,6 +4,7 @@ import { Search, Filter } from 'lucide-react-native';
 import { router } from 'expo-router';
 import InfluencerCard from '@/components/InfluencerCard';
 import FooterNav from '@/components/FooterNav';
+import {AppName} from "@/components/AppName";
 
 // Mock influencer data
 const mockInfluencers = [
@@ -144,11 +145,11 @@ const InfluencerScreen = () => {
     );
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-white">
             {/* Header */}
-            <View className="bg-indigo-600 px-4 pt-12 pb-4">
-                <View className="flex-row items-center justify-between mb-4 mt-6">
-                    <Text className="text-white text-2xl font-bold">Influencers</Text>
+            <View className="bg-indigo-600 px-4 pt-12 pb-4 rounded-b-3xl">
+                <View className="flex-row items-center justify-between mt-10">
+                    <AppName fontSize={32} color="#fff" />
                 </View>
 
                 {/* Search Bar */}

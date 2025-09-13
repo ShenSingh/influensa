@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Platform} from 'react-native';
 import { Search, User, Star, MapPin, DollarSign } from 'lucide-react-native';
 import FooterNav from "@/components/FooterNav";
 import {AppName} from "@/components/AppName";
+import AppleFooterNav from "@/components/AppleFooterNav";
 
 export default function MatchInfluencerScreen() {
     const [businessDetails, setBusinessDetails] = useState('');
@@ -149,7 +150,10 @@ export default function MatchInfluencerScreen() {
                     </View>
                 )}
             </ScrollView>
-            <FooterNav />
+            {/*<FooterNav />*/}
+            {
+                Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
+            }
 
         </View>
     );

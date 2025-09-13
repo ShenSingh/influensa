@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, FlatList } from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity, TextInput, FlatList, Platform} from 'react-native';
 import { Search, Filter } from 'lucide-react-native';
 import { router } from 'expo-router';
 import InfluencerCard from '@/components/InfluencerCard';
 import FooterNav from '@/components/FooterNav';
 import {AppName} from "@/components/AppName";
+import AppleFooterNav from "@/components/AppleFooterNav";
 
 // Mock influencer data
 const mockInfluencers = [
@@ -211,7 +212,10 @@ const InfluencerScreen = () => {
                 />
             </View>
 
-            <FooterNav />
+            {/*<FooterNav />*/}
+            {
+                Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
+            }
         </View>
     );
 };

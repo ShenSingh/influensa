@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import {View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Platform} from 'react-native';
 import { Star, Users, Heart, MessageCircle, Share2, Bookmark, Home, User, Search, Briefcase } from 'lucide-react-native';
 import FooterNav from "@/components/FooterNav";
+import AppleFooterNav from "@/components/AppleFooterNav";
 
 const { width } = Dimensions.get('window');
 const imageWidth = width;
@@ -158,7 +159,10 @@ export default function InfluencerProfileScreen() {
                 </View>
             </ScrollView>
 
-            <FooterNav />
+            {/*<FooterNav />*/}
+            {
+                Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
+            }
         </View>
     );
 }

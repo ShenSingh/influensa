@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform} from 'react-native';
 import { Save, Building, Users, Target, Phone, Mail } from 'lucide-react-native';
 import FooterNav from "@/components/FooterNav";
 import {AppName} from "@/components/AppName";
+import AppleFooterNav from "@/components/AppleFooterNav";
 
 export default function UserBusinessScreen() {
     const [businessName, setBusinessName] = useState('');
@@ -150,7 +151,10 @@ export default function UserBusinessScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            <FooterNav />
+            {/*<FooterNav />*/}
+            {
+                Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
+            }
         </View>
     );
 }

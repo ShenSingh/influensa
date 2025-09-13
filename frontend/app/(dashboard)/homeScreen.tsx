@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { Search, Filter, User } from 'lucide-react-native';
 import { router } from "expo-router";
 import FooterNav from "@/components/FooterNav";
@@ -70,7 +70,9 @@ const HomeScreen = () => {
         </ScrollView>
 
         {/*<FooterNav />*/}
-        <AppleFooterNav />
+        {
+          Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
+        }
       </View>
   );
 };

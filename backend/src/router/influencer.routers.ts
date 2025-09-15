@@ -10,7 +10,7 @@ import {
 
 export const influencerRouter = Router()
 
-influencerRouter.use(authenticateToken) // all router
+//influencerRouter.use(authenticateToken) // all router
 
 influencerRouter.get("/getAll", getAllInfluencers)
 influencerRouter.delete("/:id", deleteInfluencer)

@@ -6,6 +6,7 @@ import authRouters from "./auth.routers";
 import {influencerRouter} from "./influencer.routers";
 import {socialMediaRouter} from "./socialMedia.routers";
 import {businessDetailsRouter} from "./businessDetails";
+import aiRouter from "./ai.routers";
 
 const rootRouter = Router()
 
@@ -14,5 +15,6 @@ rootRouter.use("/user", userRouter);
 rootRouter.use("/influencer", influencerRouter);
 rootRouter.use("/socialMedia", socialMediaRouter);
 rootRouter.use("/businessDetails", businessDetailsRouter);
+rootRouter.use("/ai", aiRouter);
 
 export default rootRouter

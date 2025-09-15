@@ -10,7 +10,7 @@ dotenv.config()
 const app = express()
 
 const corsOptions = {
-    origin: process.env.CLIENT_ORGIN,
+    origin: ["http://localhost:8081", "http://172.20.10.4:8081", "exp://192.168.1.100:8081"],
     credentials: true,
     methods: ["GET", "PUT", "POST", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
@@ -33,4 +33,3 @@ connectDB().then(r => {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
 })
-

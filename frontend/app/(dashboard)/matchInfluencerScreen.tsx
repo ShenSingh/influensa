@@ -1,160 +1,242 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Platform} from 'react-native';
-import { Search, User, Star, MapPin, DollarSign } from 'lucide-react-native';
+import {View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Platform, Alert} from 'react-native';
+import { Search, User, Star, MapPin, DollarSign, TrendingUp, MessageCircle, Heart } from 'lucide-react-native';
+import { router } from 'expo-router';
 import FooterNav from "@/components/FooterNav";
 import {AppName} from "@/components/AppName";
 import AppleFooterNav from "@/components/AppleFooterNav";
+import { getDetailedRecommendations } from '@/services/match-ai.service';
+import { convertGoogleDriveUrl } from '@/utils/googleDriveUtils';
+
+interface RecommendationResult {
+    username: string;
+    similarity_score: number;
+    avg_likes: number;
+    avg_comments: number;
+    influencer: any;
+    hasProfile: boolean;
+}
 
 export default function MatchInfluencerScreen() {
     const [businessDetails, setBusinessDetails] = useState('');
     const [loading, setLoading] = useState(false);
-    const [influencers, setInfluencers] = useState<any[]>([]);
+    const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
+    const [hasSearched, setHasSearched] = useState(false);
 
-    // Mock influencer data
-    const mockInfluencers = [
-        {
-            id: 1,
-            name: "Alex Morgan",
-            category: "Fitness & Wellness",
-            location: "New York, USA",
-            rate: "$500 - $1000",
-            followers: "125K",
-            avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHx8MA%3D%3D"
-        },
-        {
-            id: 2,
-            name: "Jordan Smith",
-            category: "Technology & Gaming",
-            location: "San Francisco, USA",
-            rate: "$750 - $1500",
-            followers: "89K",
-            avatar: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTF8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
-        },
-        {
-            id: 3,
-            name: "Taylor Kim",
-            category: "Fashion & Lifestyle",
-            location: "Los Angeles, USA",
-            rate: "$1000 - $2500",
-            followers: "245K",
-            avatar: "https://images.unsplash.com/photo-1605993439219-9d09d2020fa5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
-        },
-        {
-            id: 4,
-            name: "Casey Johnson",
-            category: "Food & Cooking",
-            location: "Chicago, USA",
-            rate: "$300 - $800",
-            followers: "98K",
-            avatar: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+    const handleFindInfluencers = async () => {
+        if (!businessDetails.trim()) {
+            Alert.alert('Please enter business details');
+            return;
         }
-    ];
-
-    const handleMatchInfluencers = () => {
-        if (businessDetails.trim() === '') return;
 
         setLoading(true);
-
-        // Simulate API call delay
-        setTimeout(() => {
-            setInfluencers(mockInfluencers);
+        try {
+            const results = await getDetailedRecommendations(businessDetails);
+            setRecommendations(results);
+            setHasSearched(true);
+            console.log('Recommendations received:', results);
+        } catch (error) {
+            console.error('Error finding influencers:', error);
+            Alert.alert('Error', 'Failed to find matching influencers. Please try again.');
+        } finally {
             setLoading(false);
-        }, 1500);
+        }
+    };
+
+    const renderRecommendationCard = (recommendation: RecommendationResult, index: number) => {
+        const { username, similarity_score, avg_likes, avg_comments, influencer, hasProfile } = recommendation;
+
+        return (
+            <TouchableOpacity
+                key={index}
+                className="bg-white rounded-2xl shadow-sm p-4 mb-4"
+                onPress={() => {
+                    if (hasProfile && influencer) {
+                        // Navigate to influencer profile
+                        router.push({
+                            pathname: '/(dashboard)/influencerProfileScreen',
+                            params: { influencerId: influencer._id }
+                        });
+                    }
+                }}
+                disabled={!hasProfile}
+            >
+                <View className="flex-row">
+                    {/* Profile Image */}
+                    <View className="mr-4">
+                        {hasProfile && influencer?.image ? (
+                            <Image
+                                source={{ uri: convertGoogleDriveUrl(influencer.image) }}
+                                className="w-16 h-16 rounded-full"
+                            />
+                        ) : (
+                            <View className="w-16 h-16 rounded-full bg-gray-200 items-center justify-center">
+                                <User color="#9CA3AF" size={24} />
+                            </View>
+                        )}
+
+                        {/* Match Score Badge */}
+                        <View className="absolute -top-2 -right-2 bg-indigo-600 rounded-full px-2 py-1">
+                            <Text className="text-white text-xs font-bold">
+                                {(similarity_score * 100).toFixed(1)}%
+                            </Text>
+                        </View>
+                    </View>
+
+                    {/* Content */}
+                    <View className="flex-1">
+                        <View className="flex-row items-center mb-1">
+                            <Text className="font-bold text-gray-900 text-lg">
+                                {hasProfile ? influencer.name : `@${username}`}
+                            </Text>
+                            {hasProfile && influencer?.verified && (
+                                <View className="ml-2 bg-blue-100 rounded-full p-1">
+                                    <Star color="#3B82F6" fill="#3B82F6" size={12} />
+                                </View>
+                            )}
+                        </View>
+
+                        <Text className="text-indigo-600 text-sm mb-2">@{username}</Text>
+
+                        {hasProfile && influencer ? (
+                            <>
+                                <Text className="text-gray-600 text-sm mb-2">{influencer.niche}</Text>
+                                <View className="flex-row items-center mb-2">
+                                    <MapPin color="#9CA3AF" size={14} />
+                                    <Text className="text-gray-500 text-xs ml-1">{influencer.location}</Text>
+                                </View>
+                                <View className="flex-row justify-between">
+                                    <View className="flex-row items-center">
+                                        <User color="#9CA3AF" size={14} />
+                                        <Text className="text-gray-700 text-sm ml-1">{influencer.followers}</Text>
+                                    </View>
+                                    <View className="flex-row items-center">
+                                        <TrendingUp color="#10B981" size={14} />
+                                        <Text className="text-gray-700 text-sm ml-1">{influencer.engagement}%</Text>
+                                    </View>
+                                </View>
+                            </>
+                        ) : (
+                            <Text className="text-gray-500 text-sm italic">Profile not found in database</Text>
+                        )}
+
+                        {/* AI Stats */}
+                        <View className="mt-3 p-2 bg-gray-50 rounded-lg">
+                            <Text className="text-gray-600 text-xs font-medium mb-1">AI Performance Metrics</Text>
+                            <View className="flex-row justify-between">
+                                <View className="flex-row items-center">
+                                    <Heart color="#FF6B6B" size={12} />
+                                    <Text className="text-gray-600 text-xs ml-1">
+                                        {Math.round(avg_likes).toLocaleString()} avg likes
+                                    </Text>
+                                </View>
+                                <View className="flex-row items-center">
+                                    <MessageCircle color="#6E44FF" size={12} />
+                                    <Text className="text-gray-600 text-xs ml-1">
+                                        {Math.round(avg_comments)} avg comments
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+
+                {!hasProfile && (
+                    <View className="mt-2 p-2 bg-yellow-50 rounded-lg border border-yellow-200">
+                        <Text className="text-yellow-800 text-xs text-center">
+                            This influencer is not yet in our database but shows high compatibility
+                        </Text>
+                    </View>
+                )}
+            </TouchableOpacity>
+        );
     };
 
     return (
         <View className="flex-1 bg-white">
             {/* Header */}
-            <View className="bg-indigo-600 p-6 pt-12 rounded-b-3xl">
+            <View className="bg-indigo-600 px-4 pt-12 pb-6 rounded-b-3xl">
                 <View className="flex-row items-center justify-between mt-10">
-                    <AppName fontSize={32} color="#fff" />
+                    <AppName fontSize={28} color="#fff" />
                 </View>
-                <Text className="text-2xl font-bold text-white mt-8">AI Influencer Match</Text>
-                <Text className="text-indigo-100 mt-2">Describe your business to find perfect influencer matches</Text>
+                <Text className="text-white/90 text-base mt-2">
+                    AI-Powered Influencer Matching
+                </Text>
             </View>
 
-            <ScrollView className="flex-1 p-4">
-                {/* Input Section */}
-                <View className="bg-white rounded-2xl p-5 shadow-sm mb-6">
-                    <Text className="text-lg font-semibold text-gray-800 mb-3">Business Details</Text>
+            <ScrollView className="flex-1 px-4 py-6">
+                {/* Business Details Input */}
+                <View className="mb-6">
+                    <Text className="text-gray-900 text-lg font-bold mb-3">
+                        Describe Your Business
+                    </Text>
+                    <Text className="text-gray-600 text-sm mb-4">
+                        Tell us about your business, target audience, and campaign goals for AI-powered matching.
+                    </Text>
+
                     <TextInput
-                        className="border border-gray-200 rounded-xl p-4 h-32 text-base mb-4"
-                        placeholder="Describe your business, target audience, and what you're looking for in an influencer..."
+                        className="bg-gray-50 rounded-xl p-4 text-gray-900 min-h-24"
+                        placeholder="e.g., We're a sustainable fashion brand targeting eco-conscious millennials..."
+                        multiline
                         value={businessDetails}
                         onChangeText={setBusinessDetails}
-                        multiline
                         textAlignVertical="top"
                     />
-                    <TouchableOpacity
-                        className="bg-indigo-600 rounded-xl p-4 flex-row items-center justify-center"
-                        onPress={handleMatchInfluencers}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <>
-                                <Search color="white" size={20} className="mr-2" />
-                                <Text className="text-white font-semibold text-base">Find Influencers</Text>
-                            </>
-                        )}
-                    </TouchableOpacity>
                 </View>
 
-                {/* Results Section */}
-                {influencers.length > 0 && (
-                    <View className="mb-6">
-                        <Text className="text-xl font-bold text-gray-800 mb-4">Recommended Influencers</Text>
-                        <Text className="text-gray-600 mb-4">Based on your business details, these influencers are a great match:</Text>
+                {/* Search Button */}
+                <TouchableOpacity
+                    className={`rounded-xl py-4 px-6 mb-6 flex-row items-center justify-center ${
+                        loading ? 'bg-gray-400' : 'bg-indigo-600'
+                    }`}
+                    onPress={handleFindInfluencers}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="white" size="small" className="mr-2" />
+                    ) : (
+                        <Search color="white" size={20} className="mr-2" />
+                    )}
+                    <Text className="text-white font-semibold text-lg">
+                        {loading ? 'Finding Matches...' : 'Find Matching Influencers'}
+                    </Text>
+                </TouchableOpacity>
 
-                        <View className="gap-4">
-                            {influencers.map((influencer) => (
-                                <View key={influencer.id} className="bg-white rounded-2xl p-4 flex-row shadow-sm">
-                                    <Image
-                                        source={{ uri: influencer.avatar }}
-                                        className="w-16 h-16 rounded-full"
-                                    />
-                                    <View className="flex-1 ml-4">
-                                        <Text className="font-bold text-lg text-gray-800">{influencer.name}</Text>
-                                        <Text className="text-indigo-600 font-medium">{influencer.category}</Text>
-
-                                        <View className="flex-row items-center mt-2">
-                                            <MapPin size={14} color="#6b7280" />
-                                            <Text className="text-gray-600 text-sm ml-1">{influencer.location}</Text>
-                                        </View>
-
-                                        <View className="flex-row items-center mt-1">
-                                            <DollarSign size={14} color="#6b7280" />
-                                            <Text className="text-gray-600 text-sm ml-1">{influencer.rate}</Text>
-                                        </View>
-
-                                        <View className="flex-row items-center mt-1">
-                                            <User size={14} color="#6b7280" />
-                                            <Text className="text-gray-600 text-sm ml-1">{influencer.followers} followers</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            ))}
+                {/* Results */}
+                {hasSearched && (
+                    <View>
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-gray-900 text-lg font-bold">
+                                AI Recommendations ({recommendations.length})
+                            </Text>
                         </View>
+
+                        {recommendations.length === 0 ? (
+                            <View className="bg-gray-50 rounded-xl p-6 items-center">
+                                <Text className="text-gray-600 text-center">
+                                    No matching influencers found. Try adjusting your business description.
+                                </Text>
+                            </View>
+                        ) : (
+                            <View>
+                                {recommendations.map((rec, index) => renderRecommendationCard(rec, index))}
+                            </View>
+                        )}
                     </View>
                 )}
 
-                {/* Empty State */}
-                {influencers.length === 0 && !loading && (
-                    <View className="bg-white rounded-2xl p-6 items-center justify-center">
-                        <Star size={48} color="#4f46e5" className="mb-4" />
-                        <Text className="text-lg font-semibold text-gray-800 text-center">Find Your Perfect Influencer Match</Text>
-                        <Text className="text-gray-600 text-center mt-2">
-                            Describe your business and target audience to get AI-powered influencer recommendations
+                {/* Info Section */}
+                {!hasSearched && (
+                    <View className="bg-indigo-50 rounded-xl p-4 mt-4">
+                        <Text className="text-indigo-900 font-semibold mb-2">How it works:</Text>
+                        <Text className="text-indigo-800 text-sm leading-5">
+                            Our AI analyzes your business description and matches you with influencers based on content similarity, engagement rates, and audience alignment.
                         </Text>
                     </View>
                 )}
             </ScrollView>
-            {/*<FooterNav />*/}
-            {
-                Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />
-            }
 
+            {Platform.OS === "ios" ? <AppleFooterNav /> : <FooterNav />}
         </View>
     );
 }

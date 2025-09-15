@@ -1,19 +1,39 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import { Eye, EyeOff, Lock, Mail, User } from "lucide-react-native";
 import { router } from "expo-router";
+import authService from "../../services/auth.service";
 
 const SignUpScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSignUp = () => {
-    // Handle sign-up logic here
-    console.log("onSignUp");
-    // For now, navigate to dashboard
-    router.replace("/(dashboard)/homeScreen");
+  const onSignUp = async () => {
+    if (name.trim() === '' || email.trim() === '' || password.trim() === '') {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authService.signUp({
+        userName: name.trim(),
+        email: email.trim(),
+        password: password
+      });
+
+
+
+      // Navigate to dashboard on successful signup
+      router.replace("/(dashboard)/homeScreen");
+    } catch (error: any) {
+      Alert.alert('Sign Up Failed', error.message || 'An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSwitchToSignIn = () => {
@@ -77,10 +97,15 @@ const SignUpScreen = () => {
         </View>
 
         <TouchableOpacity
-          className="bg-[#6E44FF] py-4 rounded-xl mb-6 mt-24 items-center justify-center"
+          className={`py-4 rounded-xl mb-6 mt-24 items-center justify-center ${
+            loading ? 'bg-gray-400' : 'bg-[#6E44FF]'
+          }`}
           onPress={onSignUp}
+          disabled={loading}
         >
-          <Text className="text-white text-lg font-semibold">Sign Up</Text>
+          <Text className="text-white text-lg font-semibold">
+            {loading ? 'Signing Up...' : 'Sign Up'}
+          </Text>
         </TouchableOpacity>
 
         <View className="flex-row items-center justify-center mb-8">

@@ -63,9 +63,9 @@ export const updateInfluencer = async (req: Request, res: Response, next: NextFu
 export const createInfluencer = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
         const body = req.body;
-        const { influencerName } = req.body.influencerName;
+        const { socialName } = req.body.socialName;
 
-        const existingInfluencer = await InfluencerModel.findOne({ influencerName });
+        const existingInfluencer = await InfluencerModel.findOne({ socialName });
         if (!existingInfluencer) {
 
             const newInfluencer = new InfluencerModel(body);

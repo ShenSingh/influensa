@@ -6,90 +6,8 @@ import InfluencerCard from '@/components/InfluencerCard';
 import FooterNav from '@/components/FooterNav';
 import {AppName} from "@/components/AppName";
 import AppleFooterNav from "@/components/AppleFooterNav";
-
-// Mock influencer data
-const mockInfluencers = [
-    {
-        id: '1',
-        name: 'Alex Morgan',
-        niche: 'Fashion & Lifestyle',
-        followers: '1.2M',
-        engagement: 4.8,
-        location: 'New York, USA',
-        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHx8MA%3D%3D',
-        verified: true,
-    },
-    {
-        id: '2',
-        name: 'Jordan Smith',
-        niche: 'Tech & Gaming',
-        followers: '850K',
-        engagement: 5.2,
-        location: 'San Francisco, USA',
-        image: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTF8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: true,
-    },
-    {
-        id: '3',
-        name: 'Taylor Swift',
-        niche: 'Music & Entertainment',
-        followers: '2.1M',
-        engagement: 6.1,
-        location: 'Los Angeles, USA',
-        image: 'https://images.unsplash.com/photo-1605993439219-9d09d2020fa5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTN8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: true,
-    },
-    {
-        id: '4',
-        name: 'Chris Evans',
-        niche: 'Fitness & Health',
-        followers: '950K',
-        engagement: 4.5,
-        location: 'Boston, USA',
-        image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: false,
-    },
-    {
-        id: '5',
-        name: 'Emma Watson',
-        niche: 'Beauty & Skincare',
-        followers: '1.8M',
-        engagement: 5.7,
-        location: 'London, UK',
-        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D',
-        verified: true,
-    },
-    {
-        id: '6',
-        name: 'Michael Chen',
-        niche: 'Food & Cooking',
-        followers: '650K',
-        engagement: 4.9,
-        location: 'Vancouver, Canada',
-        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzd8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: false,
-    },
-    {
-        id: '7',
-        name: 'Sophia Kim',
-        niche: 'Travel & Adventure',
-        followers: '1.5M',
-        engagement: 5.3,
-        location: 'Seoul, South Korea',
-        image: 'https://images.unsplash.com/photo-1534528373424-5630fcd0d1f3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDR8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: true,
-    },
-    {
-        id: '8',
-        name: 'David Johnson',
-        niche: 'Finance & Investing',
-        followers: '720K',
-        engagement: 3.8,
-        location: 'Chicago, USA',
-        image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTd8fHVzZXJ8ZW58MHx8MHx8fDA%3D',
-        verified: false,
-    },
-];
+import InfluencerService from '@/services/influencer.service';
+import { Influencer } from '@/types/Influencer';
 
 // Filter options
 const filterOptions = [
@@ -105,18 +23,42 @@ const filterOptions = [
 const InfluencerScreen = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedFilter, setSelectedFilter] = useState('all');
-    const [influencers, setInfluencers] = useState(mockInfluencers);
-    const [filteredInfluencers, setFilteredInfluencers] = useState(mockInfluencers);
+    const [influencers, setInfluencers] = useState<Influencer[]>([]);
+    const [filteredInfluencers, setFilteredInfluencers] = useState<Influencer[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch influencers from backend
+    useEffect(() => {
+        const fetchInfluencers = async () => {
+            try {
+                setLoading(true);
+                const data = await InfluencerService.getAllInfluencers();
+                console.log("data is : "+data);
+                setInfluencers(data);
+                setFilteredInfluencers(data);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to fetch influencers:', err);
+                setError('Failed to load influencers. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInfluencers();
+    }, []);
 
     // Filter influencers based on search and filter
     useEffect(() => {
-        let result = mockInfluencers;
+        let result = influencers;
 
         // Apply search filter
         if (searchQuery) {
             result = result.filter(influencer =>
                 influencer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                influencer.niche.toLowerCase().includes(searchQuery.toLowerCase())
+                influencer.niche.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                influencer.socialName.toLowerCase().includes(searchQuery.toLowerCase())
             );
         }
 
@@ -128,15 +70,30 @@ const InfluencerScreen = () => {
         }
 
         setFilteredInfluencers(result);
-    }, [searchQuery, selectedFilter]);
+    }, [searchQuery, selectedFilter, influencers]);
+
+    // Convert backend Influencer to frontend format for InfluencerCard
+    const convertInfluencerForCard = (influencer: Influencer) => ({
+        id: influencer._id,
+        name: influencer.name,
+        niche: influencer.niche,
+        followers: influencer.followers,
+        engagement: influencer.engagement,
+        location: influencer.location,
+        image: influencer.image,
+        verified: influencer.verified,
+    });
 
     // Render an influencer card using the component
-    const renderInfluencerCard = ({ item }: { item: typeof mockInfluencers[0] }) => (
+    const renderInfluencerCard = ({ item }: { item: Influencer }) => (
         <InfluencerCard
-            influencer={item}
+            influencer={convertInfluencerForCard(item)}
             onPress={() => {
-                // Navigate to influencer profile page
-                router.push('/(dashboard)/influencerProfileScreen');
+                // Navigate to influencer profile page with ID
+                router.push({
+                    pathname: '/(dashboard)/influencerProfileScreen',
+                    params: { influencerId: item._id }
+                });
             }}
             onHeartPress={() => {
                 // Handle heart/favorite action
@@ -144,6 +101,45 @@ const InfluencerScreen = () => {
             }}
         />
     );
+
+    if (loading) {
+        return (
+            <View className="flex-1 bg-white justify-center items-center">
+                <Text className="text-gray-600">Loading influencers...</Text>
+            </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View className="flex-1 bg-white justify-center items-center px-4">
+                <Text className="text-red-600 text-center mb-4">{error}</Text>
+                <TouchableOpacity
+                    className="bg-indigo-600 px-6 py-3 rounded-lg"
+                    onPress={() => {
+                        setError(null);
+                        // Retry fetching
+                        const fetchInfluencers = async () => {
+                            try {
+                                setLoading(true);
+                                const data = await InfluencerService.getAllInfluencers();
+                                setInfluencers(data);
+                                setFilteredInfluencers(data);
+                                setError(null);
+                            } catch (err) {
+                                setError('Failed to load influencers. Please try again.');
+                            } finally {
+                                setLoading(false);
+                            }
+                        };
+                        fetchInfluencers();
+                    }}
+                >
+                    <Text className="text-white font-medium">Retry</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     return (
         <View className="flex-1 bg-white">
@@ -197,16 +193,10 @@ const InfluencerScreen = () => {
 
             {/* Influencer List */}
             <View className="flex-1 px-4 py-6">
-                <View className="flex-row justify-between items-center mb-4">
-                    <Text className="text-gray-900 text-lg font-bold">
-                        {filteredInfluencers.length} Influencers Found
-                    </Text>
-                </View>
-
                 <FlatList
                     data={filteredInfluencers}
                     renderItem={renderInfluencerCard}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item._id}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 />

@@ -37,7 +37,7 @@ const WelcomeScreen = () => {
                 </View>
 
                 <TouchableOpacity
-                    className="bg-[#6E44FF] mt-28 py-4 px-8 rounded-xl mx-8 mb-8 flex-row items-center justify-center"
+                    className="bg-[#6E44FF] py-4 px-8 rounded-xl mx-8 mb-8 flex-row items-center justify-center"
                     onPress={onContinue}
                 >
                     <Text className="text-white text-lg font-semibold mr-2">Get Started</Text>

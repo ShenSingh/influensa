@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Star, Heart, MapPin, Users } from 'lucide-react-native';
+import { convertGoogleDriveUrl } from '../utils/googleDriveUtils';
 
 interface InfluencerCardProps {
   influencer: {
@@ -18,14 +19,27 @@ interface InfluencerCardProps {
 }
 
 const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardProps) => {
+  // Convert Google Drive URL to proper format
+  const imageUrl = convertGoogleDriveUrl(influencer.image);
+
+  console.log('InfluencerCard original URL:', influencer.image);
+  console.log('InfluencerCard converted URL:', imageUrl);
+
   return (
+
     <TouchableOpacity
       className="bg-white rounded-2xl shadow-sm p-4 mb-4 flex-row"
       onPress={onPress}
     >
       <Image
-        source={{ uri: influencer.image }}
+        source={{ uri: imageUrl }}
         className="w-16 h-16 rounded-full"
+        onError={(error) => {
+          console.log('Image load error:', error.nativeEvent.error);
+        }}
+        onLoad={() => {
+          console.log('Image loaded successfully:', imageUrl);
+        }}
       />
       <View className="ml-4 flex-1">
         <View className="flex-row items-center">

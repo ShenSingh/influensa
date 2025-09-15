@@ -1,18 +1,35 @@
 import React, { useState } from "react";
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TextInput, TouchableOpacity, View, Alert } from "react-native";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react-native";
 import { router } from "expo-router";
+import authService from "../../services/auth.service";
 
 const SignInScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSignIn = () => {
-    // Handle sign-in logic here
-    console.log("onSignIn");
-    // For now, navigate to dashboard
-    router.replace("/(dashboard)/homeScreen");
+  const onSignIn = async () => {
+    if (email.trim() === '' || password.trim() === '') {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await authService.signIn({
+        email: email.trim(),
+        password: password
+      });
+
+      // Navigate to dashboard on successful signin
+      router.replace("/(dashboard)/homeScreen");
+    } catch (error: any) {
+      Alert.alert('Sign In Failed', error.message || 'An error occurred during sign in');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSwitchToSignUp = () => {
@@ -63,14 +80,19 @@ const SignInScreen = () => {
         </View>
 
         <TouchableOpacity
-          className="bg-[#6E44FF] py-4 rounded-xl mb-6 mt-48 items-center justify-center"
+          className={`py-4 rounded-xl mb-6 mt-48 items-center justify-center ${
+            loading ? 'bg-gray-400' : 'bg-[#6E44FF]'
+          }`}
           onPress={onSignIn}
+          disabled={loading}
         >
-          <Text className="text-white text-lg font-semibold">Sign In</Text>
+          <Text className="text-white text-lg font-semibold">
+            {loading ? 'Signing In...' : 'Sign In'}
+          </Text>
         </TouchableOpacity>
 
         <View className="flex-row items-center justify-center mb-8">
-          <Text className="text-[#6C757D]">Don't have an account?</Text>
+          <Text className="text-[#6C757D]">Don&apos;t have an account?</Text>
           <TouchableOpacity onPress={onSwitchToSignUp}>
             <Text className="text-[#6E44FF] font-semibold ml-2">Sign Up</Text>
           </TouchableOpacity>

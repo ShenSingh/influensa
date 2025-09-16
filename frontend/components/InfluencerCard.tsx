@@ -19,11 +19,6 @@ interface InfluencerCardProps {
 }
 
 const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardProps) => {
-  // Convert Google Drive URL to proper format
-  const imageUrl = convertGoogleDriveUrl(influencer.image);
-
-  console.log('InfluencerCard original URL:', influencer.image);
-  console.log('InfluencerCard converted URL:', imageUrl);
 
   return (
 
@@ -32,13 +27,10 @@ const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardPro
       onPress={onPress}
     >
       <Image
-        source={{ uri: imageUrl }}
+        source={{ uri: influencer.image }}
         className="w-16 h-16 rounded-full"
         onError={(error) => {
           console.log('Image load error:', error.nativeEvent.error);
-        }}
-        onLoad={() => {
-          console.log('Image loaded successfully:', imageUrl);
         }}
       />
       <View className="ml-4 flex-1">

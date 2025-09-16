@@ -1,75 +1,90 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
+import {Influencer, InfluencerModel} from "../models/Influencer";
+
 
 const AI_SERVICE_URL = 'http://127.0.0.1:8000';
+
+interface RequestBody {
+  business_description: string;
+}
+interface AiResponseBody {
+  username: string;
+  similarity_score: any;
+  avg_likes: any;
+  avg_comments: any;
+}
+
+interface ResponseBody {
+  username: string;
+  similarity_score: number;
+  avg_likes: number;
+  avg_comments: number;
+  influencer: Influencer;
+  hasProfile: boolean;
+}
 
 export const getAIRecommendations = async (req: Request, res: Response) => {
   try {
     const { businessDetails } = req.body;
 
-    if (!businessDetails) {
+    if (!businessDetails || typeof businessDetails !== 'string' || businessDetails.trim() === '') {
       return res.status(400).json({
         success: false,
-        message: 'Business details are required'
+        message: 'Valid business details are required'
       });
     }
+    console.log("business Details :" + businessDetails);
 
-    console.log('Sending to AI service:', { businessDetails });
+    const requestBody: RequestBody = {
+      business_description: businessDetails.trim()
+    };
 
-    // Try different request formats that your AI service might expect
-    const requestPayloads = [
-      // Format 1: businessDetails as you have it
-      { businessDetails },
-      // Format 2: business_details (snake_case)
-      { business_details: businessDetails },
-      // Format 3: text field
-      { text: businessDetails },
-      // Format 4: description field
-      { description: businessDetails },
-      // Format 5: query field
-      { query: businessDetails },
-      // Format 6: Just a string
-      businessDetails
-    ];
-
-    let aiResponse;
-    let lastError;
-
-    // Try each format until one works
-    for (const payload of requestPayloads) {
-      try {
-        console.log('Trying payload format:', payload);
-
-        aiResponse = await axios.post(`${AI_SERVICE_URL}/recommend`, payload, {
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          timeout: 30000
-        });
-
-        console.log('AI service response:', aiResponse.data);
-        break; // Success, exit the loop
-
-      } catch (error: any) {
-        lastError = error;
-        if (error.response?.data) {
-          console.log(`Format failed:`, JSON.stringify(payload), 'Error:', error.response.data);
-        }
-        continue; // Try next format
+    // Call the AI service
+    const aiResponse = await axios.post(`${AI_SERVICE_URL}/recommend`, requestBody, {
+      headers: {
+        'Content-Type': 'application/json'
       }
-    }
+    });
 
-    if (!aiResponse) {
-      throw lastError; // If all formats failed, throw the last error
-    }
+    if (aiResponse.status === 200) {
+      const arr: AiResponseBody[] = aiResponse.data.recommendations;
+      const responseData: ResponseBody[] = [];
 
-    // Return the AI response
-    res.json(aiResponse.data);
+      for (const i of arr) {
+
+        if (i.similarity_score !== 0){
+          const influ: Influencer = await findInfluencerByUsername(i.username);
+
+          if (influ) {
+            const responseBody: ResponseBody = {
+              username: influ.socialName,
+              similarity_score: parseFloat(i.similarity_score),
+              avg_likes: parseInt(i.avg_likes),
+              avg_comments: parseInt(i.avg_comments),
+              influencer: influ,
+              hasProfile: true
+            };
+            responseData.push(responseBody);
+          }
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        recommendations: responseData
+      });
+    } else {
+      return res.status(aiResponse.status).json({
+        success: false,
+        message: 'Failed to get recommendations from AI service',
+        details: aiResponse.data || 'Unknown error'
+      });
+    }
 
   } catch (error: any) {
     console.error('AI service error:', error);
 
-    // Log the response data if available
     if (error.response?.data) {
       console.error('AI service error details:', error.response.data);
     }
@@ -82,7 +97,6 @@ export const getAIRecommendations = async (req: Request, res: Response) => {
     }
 
     if (error.response) {
-      // Forward the AI service error details
       return res.status(error.response.status).json({
         success: false,
         message: error.response.data?.message || 'AI service error',
@@ -90,9 +104,22 @@ export const getAIRecommendations = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Internal server error while processing AI recommendations'
     });
   }
 };
+
+
+async function findInfluencerByUsername(username: string): Promise<any> {
+
+  const influencer = await InfluencerModel.findOne({socialName: username});
+
+  if (influencer) {
+    console.log(`Influencer found: ${username}`);
+    return influencer;
+  } else {
+    console.log(`Influencer not found: ${username}`);
+  }
+}

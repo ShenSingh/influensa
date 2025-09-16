@@ -119,21 +119,6 @@ class BusinessService {
       }
     }
 
-    if ('website' in businessData && businessData.website) {
-      const urlRegex = /^https?:\/\/.+\..+/;
-      if (!urlRegex.test(businessData.website)) {
-        errors.push('Invalid website URL format');
-      }
-    }
-
-    if ('budget' in businessData && businessData.budget) {
-      if (businessData.budget.min < 0) {
-        errors.push('Minimum budget cannot be negative');
-      }
-      if (businessData.budget.max < businessData.budget.min) {
-        errors.push('Maximum budget cannot be less than minimum budget');
-      }
-    }
 
     return errors;
   }

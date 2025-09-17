@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { Search, Filter, User } from 'lucide-react-native';
 import { router } from "expo-router";
@@ -7,9 +7,65 @@ import {TopInfluencers} from "@/components/TopInfluencers";
 import {RecentMatchesInfluencers} from "@/components/RecentMatchesInfluencers";
 import {AppName} from "@/components/AppName";
 import AppleFooterNav from "@/components/AppleFooterNav";
+import {Business} from "@/types/Business";
+import BusinessService from "@/services/business.service";
+import {RecommendationResult} from "@/app/(dashboard)/matchInfluencerScreen";
+import {getRecommendInfluencer} from "@/services/match-ai.service";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
+
+
+
+  useEffect(() => {
+    loadBusinessDetails()
+
+
+  }, []);
+
+  useEffect(() => {
+    if (businesses.length > 0) {
+      loadmatchInfluencers();
+    }
+  }, [businesses]);
+
+  const loadmatchInfluencers = async () => {
+    try{
+      if (businesses.length > 0){
+        const results = await getRecommendInfluencer(businesses[0].description);
+        console.log('API Response:', results);
+
+        // Ensure results is an array before setting state
+        if (Array.isArray(results)) {
+          // Take only top 3 recommendations
+          setRecommendations(results.slice(0, 3));
+        } else {
+          console.error('API did not return an array:', results);
+          setRecommendations([]);
+        }
+      } else {
+        setRecommendations([]);
+      }
+    } catch (e) {
+      console.error('Error loading match influencers:', e);
+      setRecommendations([]);
+    }
+  }
+
+  const loadBusinessDetails = async () => {
+    try {
+      const response = await BusinessService.getUserBusinesses();
+      console.log('API Response:', response);
+      // Backend now returns an array, so we can use it directly
+      setBusinesses(response || []);
+
+    }catch (e) {
+      setBusinesses([]);
+      console.log(e)
+    }
+  }
 
   return (
       <View className="flex-1 bg-white">
@@ -43,7 +99,7 @@ const HomeScreen = () => {
           <TopInfluencers />
 
           {/* Recent Matches Section */}
-          <RecentMatchesInfluencers />
+          <RecentMatchesInfluencers recommendations={recommendations} />
 
           {/* Business Profile Section */}
           <View className="bg-indigo-50 rounded-xl p-5 mb-8">

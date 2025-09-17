@@ -32,6 +32,9 @@ export const signUp = async (
 
 export const signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
+
+        console.log(req.body);
+
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email });
 

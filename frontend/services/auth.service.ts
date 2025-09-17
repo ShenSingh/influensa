@@ -160,6 +160,10 @@ class AuthService {
       console.log('token store successful:', authData);
       await AsyncStorage.setItem(this.ACCESS_TOKEN_KEY, authData.accessToken);
       await AsyncStorage.setItem(this.USER_DATA_KEY, JSON.stringify(authData));
+
+      console.log("token is"+ AsyncStorage.getItem(this.ACCESS_TOKEN_KEY));
+
+
     } catch (error) {
       console.error('Error storing auth data:', error);
       throw new Error('Failed to store authentication data');

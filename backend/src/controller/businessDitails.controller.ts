@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {BusinessDetailModel} from "../models/BusinessDitails";
+import jwt from "jsonwebtoken";
 
 
 export const getAllBusinessDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -17,10 +18,42 @@ export const getAllBusinessDetails = async (req: Request, res: Response, next: N
     }
 }
 
+// Get all business details for the authenticated user
 export const getBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    console.log("token : "+token);
+
+    if (!token) {
+        res.status(401).json({ message: "No token provided" });
+        return;
+    }
+
+    const idFromToken = getUserIdFromToken(token);
+
+    if (!idFromToken) {
+        res.status(401).json({ message: "Invalid token" });
+        return;
+    }
+
+    try {
+        // Find ALL businesses for this user, not just one
+        const businessDetails = await BusinessDetailModel.find({ userId: idFromToken });
+        if (businessDetails.length > 0) {
+            res.status(200).json(businessDetails);
+        } else {
+            res.status(200).json([]);
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+// Get single business by ID
+export const getBusinessById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     try {
-        const businessDetail = await BusinessDetailModel.findOne({ userId: id });
+        const businessDetail = await BusinessDetailModel.findById(id);
         if (businessDetail) {
             res.status(200).json(businessDetail);
         } else {
@@ -34,7 +67,8 @@ export const getBusinessDetail = async (req: Request, res: Response, next: NextF
 export const updateBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     try {
-        const updatedBusinessDetail = await BusinessDetailModel.findOneAndUpdate({ userId: id }, req.body, { new: true });
+        // Update by business _id, not userId
+        const updatedBusinessDetail = await BusinessDetailModel.findByIdAndUpdate(id, req.body, { new: true });
         if (updatedBusinessDetail) {
             res.status(200).json(updatedBusinessDetail);
         } else {
@@ -48,7 +82,8 @@ export const updateBusinessDetail = async (req: Request, res: Response, next: Ne
 export const deleteBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     try {
-        const deletedBusinessDetail = await BusinessDetailModel.findOneAndDelete({ userId: id });
+        // Delete by business _id, not userId
+        const deletedBusinessDetail = await BusinessDetailModel.findByIdAndDelete(id);
         if (!deletedBusinessDetail) {
             res.status(404).json({ message: "Business Detail Not Found!" });
         } else {
@@ -59,14 +94,24 @@ export const deleteBusinessDetail = async (req: Request, res: Response, next: Ne
     }
 };
 
-// create business detail
+// create business detail - ALLOW MULTIPLE BUSINESSES
 export const createBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
-        const existingDetail = await BusinessDetailModel.findOne({ userId: req.body.userId });
-        if (existingDetail) {
-            res.status(400).json({ message: "Business Detail for this user already exists!" });
+        const token = req.headers.authorization?.split(" ")[1];
+        if (!token) {
+            res.status(401).json({ message: "No token provided" });
             return;
         }
+
+        const idFromToken = getUserIdFromToken(token);
+
+        if (!idFromToken) {
+            res.status(401).json({ message: "Invalid token" });
+            return;
+        }
+
+        req.body.userId = idFromToken;
+
         const businessDetail = new BusinessDetailModel(req.body);
         const savedBusinessDetail = await businessDetail.save();
         res.status(201).json(savedBusinessDetail);
@@ -74,3 +119,14 @@ export const createBusinessDetail = async (req: Request, res: Response, next: Ne
         next(error)
     }
 }
+
+
+// Helper function to extract user ID from token
+const getUserIdFromToken = (token: string): string | null => {
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as any;
+        return decoded.userId || decoded.id || null;
+    } catch (error) {
+        return null;
+    }
+};

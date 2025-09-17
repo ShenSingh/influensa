@@ -15,7 +15,7 @@ export const errorHandler = (
     } else if (error instanceof mongoose.Error) {
         res.status(400).json({ message: error.message });
     } else if (error instanceof ApiError) {
-        res.status(404).json({ message: error.message });
+        res.status(error.status).json({ message: error.message });
     } else {
         res.status(500).send("Internal server error");
     }

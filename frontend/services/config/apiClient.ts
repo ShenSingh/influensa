@@ -19,11 +19,58 @@ export const setHeader = (token: string| null) => {
   }
 };
 
+// Flag to track if token has been initialized
+let tokenInitialized = false;
+
+// Initialize token from AsyncStorage (only when needed)
+const initializeToken = async () => {
+  if (tokenInitialized) return;
+
+  try {
+    const token = await AsyncStorage.getItem('accessToken');
+    if (token) {
+      setHeader(token);
+      console.log('Token loaded from storage and set in API client');
+    }
+    tokenInitialized = true;
+  } catch (error) {
+    console.error('Error loading token from storage:', error);
+    tokenInitialized = true; // Mark as initialized even if failed to prevent retry loops
+  }
+};
+
+// Add request interceptor to ensure token is always attached
+apiClient.interceptors.request.use(
+  async (config) => {
+    // Initialize token if not already done
+    if (!tokenInitialized) {
+      await initializeToken();
+    }
+
+    // If no Authorization header is set, try to get token from storage
+    if (!config.headers.Authorization) {
+      try {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch (error) {
+        console.error('Error getting token in request interceptor:', error);
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config // original req
-      if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+      console.log("code is : "+error.response?.status)
+      if ((error.response?.status === 401 || error.response?.status === 403 ) && !originalRequest._retry) {
         originalRequest._retry = true
 
         try {

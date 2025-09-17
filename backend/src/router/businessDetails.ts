@@ -5,15 +5,17 @@ import {
     deleteBusinessDetail,
     getAllBusinessDetails,
     getBusinessDetail,
+    getBusinessById,
     updateBusinessDetail
 } from "../controller/businessDitails.controller";
 
 export const businessDetailsRouter = Router()
 
-//businessDetailsRouter.use(authenticateToken) // all router
+businessDetailsRouter.use(authenticateToken) // all router
 
 businessDetailsRouter.get("/getAll", getAllBusinessDetails)
+businessDetailsRouter.get("/user", getBusinessDetail)
+businessDetailsRouter.get("/:id", getBusinessById) // Add route for getting single business by ID
 businessDetailsRouter.delete("/:id", deleteBusinessDetail)
-businessDetailsRouter.get("/:id", getBusinessDetail)
 businessDetailsRouter.put("/:id", updateBusinessDetail)
 businessDetailsRouter.post("/", createBusinessDetail)

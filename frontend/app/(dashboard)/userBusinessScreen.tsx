@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform, ActivityIndicator, Modal} from 'react-native';
-import { Save, Building, Users, Target, Edit3, Trash2, Plus } from 'lucide-react-native';
+import { Save, Building, Users, Target, Edit3, Trash2 } from 'lucide-react-native';
 import FooterNav from "@/components/FooterNav";
 import {AppName} from "@/components/AppName";
 import AppleFooterNav from "@/components/AppleFooterNav";
@@ -28,11 +28,16 @@ export default function UserBusinessScreen() {
     const loadBusinesses = async () => {
         try {
             setLoading(true);
-            const userBusinesses = await BusinessService.getUserBusinesses();
-            setBusinesses(userBusinesses);
+            const response = await BusinessService.getUserBusinesses();
+            console.log('API Response:', response);
+
+            // Backend now returns an array, so we can use it directly
+            setBusinesses(response || []);
         } catch (error) {
             console.error('Error loading businesses:', error);
             Alert.alert('Error', 'Failed to load business details');
+            // Set empty array on error to prevent map errors
+            setBusinesses([]);
         } finally {
             setLoading(false);
         }
@@ -107,6 +112,7 @@ export default function UserBusinessScreen() {
     };
 
     const handleDelete = (business: Business) => {
+        console.log('API Response:', business);
         Alert.alert(
             'Confirm Delete',
             `Are you sure you want to delete "${business.businessName}"?`,
@@ -172,12 +178,6 @@ export default function UserBusinessScreen() {
             <View className="bg-indigo-600 p-6 pt-12 rounded-b-3xl">
                 <View className="flex-row items-center justify-between mt-10">
                     <AppName fontSize={32} color="#fff" />
-                    <TouchableOpacity
-                        className="bg-white bg-opacity-20 rounded-full p-3"
-                        onPress={openCreateModal}
-                    >
-                        <Plus size={24} color="white" />
-                    </TouchableOpacity>
                 </View>
                 <Text className="text-2xl font-bold text-white mt-8">Business Profile</Text>
                 <Text className="text-indigo-100 mt-2">Manage your business information</Text>

@@ -1,5 +1,5 @@
 import apiClient from './config/apiClient';
-import { Business, CreateBusinessRequest, UpdateBusinessRequest, BusinessFilters } from '../types/Business';
+import { Business, CreateBusinessRequest, UpdateBusinessRequest, BusinessFilters } from '@/types/Business';
 
 class BusinessService {
   // Get all businesses for the authenticated user
@@ -8,7 +8,6 @@ class BusinessService {
       const response = await apiClient.get('/api/businessDetails/user');
       return response.data;
     } catch (error) {
-      console.error('Error fetching user businesses:', error);
       throw error;
     }
   }
@@ -19,7 +18,6 @@ class BusinessService {
       const response = await apiClient.get(`/api/businessDetails/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching business:', error);
       throw error;
     }
   }
@@ -30,7 +28,6 @@ class BusinessService {
       const response = await apiClient.post('/api/businessDetails', businessData);
       return response.data;
     } catch (error) {
-      console.error('Error creating business:', error);
       throw error;
     }
   }
@@ -41,7 +38,6 @@ class BusinessService {
       const response = await apiClient.put(`/api/businessDetails/${id}`, businessData);
       return response.data;
     } catch (error) {
-      console.error('Error updating business:', error);
       throw error;
     }
   }
@@ -62,7 +58,6 @@ class BusinessService {
       const response = await apiClient.get('/api/businessDetails/search', { params: filters });
       return response.data;
     } catch (error) {
-      console.error('Error searching businesses:', error);
       throw error;
     }
   }

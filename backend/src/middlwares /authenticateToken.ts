@@ -16,8 +16,8 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err, decoded) => {
             if (err) {
                 if (err instanceof TokenExpiredError) {
-                    console.log("Access token expired:", err)
-                    return next(new ApiError(401, "Access token expired"))
+                    console.log("Access token expired 11:", err)
+                    return next(new ApiError(403, "Access token expired"))
                 } else if (err instanceof JsonWebTokenError) {
                     console.error("Invalid access token:", err)
                     return next(new ApiError(401, "Invalid access token"))

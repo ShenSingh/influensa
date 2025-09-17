@@ -1,14 +1,23 @@
 export interface Business {
+  userId: string;
+  businessName: string;
+  businessType: string;
+  description: string;
+  targetAudience: string;
+  additionalInfo: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 export interface CreateBusinessRequest {
+  userId?: string;
   businessName: string;
   businessType: string;
   description: string;
   targetAudience?: string;
-  email: string;
-  phone: string;
-  AdditionalInfo: string;
+  additionalInfo: string;
 }
 
 export interface UpdateBusinessRequest extends Partial<CreateBusinessRequest> {}

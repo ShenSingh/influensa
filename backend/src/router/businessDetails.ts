@@ -10,7 +10,7 @@ import {
 
 export const businessDetailsRouter = Router()
 
-businessDetailsRouter.use(authenticateToken) // all router
+//businessDetailsRouter.use(authenticateToken) // all router
 
 businessDetailsRouter.get("/getAll", getAllBusinessDetails)
 businessDetailsRouter.delete("/:id", deleteBusinessDetail)

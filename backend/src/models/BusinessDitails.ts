@@ -3,10 +3,11 @@ import {getAllBusinessDetails} from "../controller/businessDitails.controller";
 
 export type BusinessDetail = {
     userId?: Schema.Types.ObjectId;
-    name: string;
-    logoUrl?: string;
-    websiteUrl?: string;
+    businessName: string;
+    businessType?: string;
     description?: string;
+    targetAudience?: string;
+    additionalInfo: string;
 }
 
 const businessDetailSchema = new mongoose.Schema<BusinessDetail>({
@@ -16,17 +17,13 @@ const businessDetailSchema = new mongoose.Schema<BusinessDetail>({
             required: [true, "User ID is required"],
             unique: true,
         },
-        name: {
+        businessName: {
             type: String,
             required: [true, "Business Name is required"],
             trim: true,
             minlength: [2,"Business Name must be at least 2 characters"],
         },
-        logoUrl: {
-            type: String,
-            trim: true,
-        },
-        websiteUrl: {
+        businessType: {
             type: String,
             trim: true,
         },
@@ -35,6 +32,15 @@ const businessDetailSchema = new mongoose.Schema<BusinessDetail>({
             trim: true,
             maxlength: [500, "Description can't be more than 500 characters"],
         },
+        targetAudience: {
+            type: String,
+            trim: true,
+        },
+        additionalInfo: {
+            type: String,
+            trim: true,
+            maxlength: [1000, "Additional Info can't be more than 1000 characters"],
+        }
     },
     {
         timestamps: true,

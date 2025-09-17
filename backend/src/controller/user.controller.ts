@@ -2,6 +2,8 @@ import {Request,Response,NextFunction} from "express";
 import {ApiError} from "../errors/ApiError";
 import {UserModel} from "../models/User";
 import {getUserIdFromAccessToken} from "../utils/tokenUtils";
+import EmailService from "../utils/emailService";
+import TokenGenerator from "../utils/tokenGenerator";
 import bcrypt from "bcrypt";
 
 export const getAllUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -137,8 +139,10 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
     }
 }
 
-// Forgot Password
+// Forgot Password - Complete Implementation
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    console.log("awa hh")
     try {
         const { email } = req.body;
 
@@ -148,25 +152,96 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throw new ApiError(404, "User with this email not found");
+            // For security, don't reveal if email exists or not
+            console.log(`Password reset requested for non-existent email: ${email}`);
+            res.status(200).json({
+                message: "If an account with that email exists, we've sent a password reset link",
+                info: "Check your email for reset instructions"
+            });
+            return;
         }
 
-        // In a real application, you would:
-        // 1. Generate a secure reset token
-        // 2. Store it in the database with expiration
-        // 3. Send an email with the reset link
-        // For now, we'll just return a success message
+        // Step 1: Generate a secure reset token
+        const resetToken = TokenGenerator.generateSecureToken(); // 64-character hex string
+        const hashedToken = TokenGenerator.hashToken(resetToken); // Hash for database storage
 
-        console.log(`Password reset requested for email: ${email}`);
+        // Step 2: Store hashed token in database with expiration (1 hour)
+        const tokenExpiration = TokenGenerator.createTokenExpiration(1); // 1 hour from now
 
-        res.status(200).json({
-            message: "Password reset email sent successfully",
-            // In production, don't expose user details
-            info: "Check your email for reset instructions"
-        });
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = tokenExpiration;
+        await user.save();
+
+        // Step 3: Send email with reset link containing the plain token
+        try {
+            await EmailService.sendPasswordResetEmail(email, resetToken, user.userName);
+
+            console.log(`Password reset email sent to: ${email}`);
+            console.log(`Reset token generated (expires in 1 hour): ${resetToken.substring(0, 10)}...`);
+
+            res.status(200).json({
+                message: "Password reset email sent successfully",
+                info: "Check your email for reset instructions"
+            });
+        } catch (emailError) {
+            // If email fails, clean up the reset token
+            user.resetPasswordToken = null;
+            user.resetPasswordExpires = null;
+            await user.save();
+
+            console.error('Failed to send reset email:', emailError);
+            throw new ApiError(500, "Failed to send reset email. Please try again later.");
+        }
 
     } catch (e) {
         console.log("Error in forgotPassword:", e);
+        next(e);
+    }
+}
+
+// Reset Password - New endpoint for handling the reset
+export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const { token, newPassword } = req.body;
+
+        if (!token || !newPassword) {
+            throw new ApiError(400, "Reset token and new password are required");
+        }
+
+        if (newPassword.length < 6) {
+            throw new ApiError(400, "Password must be at least 6 characters long");
+        }
+
+        // Hash the provided token to compare with stored hash
+        const hashedToken = TokenGenerator.hashToken(token);
+
+        // Find user with matching token that hasn't expired
+        const user = await UserModel.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: new Date() } // Token must not be expired
+        });
+
+        if (!user) {
+            throw new ApiError(400, "Invalid or expired reset token");
+        }
+
+        // Hash the new password before saving (FIXED: was storing plain text)
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+        user.password = hashedPassword;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        await user.save();
+
+        console.log(`Password reset successful for user: ${user.email}`);
+
+        res.status(200).json({
+            message: "Password reset successfully",
+            info: "You can now login with your new password"
+        });
+
+    } catch (e) {
+        console.log("Error in resetPassword:", e);
         next(e);
     }
 }

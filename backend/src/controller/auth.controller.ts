@@ -33,6 +33,7 @@ export const signUp = async (
 export const signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
 
+
         console.log(req.body);
 
         const { email, password } = req.body;
@@ -61,6 +62,7 @@ export const signIn = async (req: Request, res: Response, next: NextFunction): P
                     accessToken,
                 };
 
+                console.log(userWithoutPassword);
                 res.status(200).json(userWithoutPassword);
             }else {
                 res.status(401).send("Invalid credentials!");

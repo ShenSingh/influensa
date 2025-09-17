@@ -4,6 +4,8 @@ export type User = {
     userName: string;
     email: string;
     password: string;
+    resetPasswordToken?: string | null;
+    resetPasswordExpires?: Date | null;
     createdAt: Date;
 };
 
@@ -28,9 +30,18 @@ const userSchema = new mongoose.Schema<User>({
         trim: true,
         minlength: [6,"Password must be at least 2 characters"],
     },
+    resetPasswordToken: {
+        type: String,
+        default: null
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null
+    }
 },
     {
         timestamps: true,
     }
 )
+
 export const UserModel = mongoose.model<User>("User", userSchema);

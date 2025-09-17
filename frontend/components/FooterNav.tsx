@@ -1,13 +1,15 @@
 import {View, Text, TouchableOpacity} from "react-native"
 import React from "react"
 import { useRouter, useSegments } from "expo-router"
-import {Briefcase, Home, Search, User} from "lucide-react-native";
+import {Briefcase, Home, Search, User, Users} from "lucide-react-native";
 
 const tabs = [
   { label: "Home", path: "/homeScreen", icon: Home },
-  { label: "Influencer", path: "/influencerScreen", icon: User },
+  { label: "Influencer", path: "/influencerScreen", icon: Users },
   { label: "Match", path: "/matchInfluencerScreen", icon: Search },
-  { label: "Business", path: "/userBusinessScreen", icon: Briefcase }
+  { label: "Business", path: "/userBusinessScreen", icon: Briefcase },
+  { label: "User", path: "/userScreen", icon: User }
+
 ] as const
 
 const FooterNav = () => {

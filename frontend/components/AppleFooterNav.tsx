@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { BlurView } from "expo-blur";
-import { Briefcase, Home, Search, User } from "lucide-react-native";
+import {Briefcase, Home, Search, User, Users} from "lucide-react-native";
 const AppleFooterNav = () => {
     const router = useRouter();
     const segments = useSegments();
@@ -38,9 +38,11 @@ import { useRouter, useSegments } from "expo-router";
 
 const tabs = [
     { label: "Home", path: "/homeScreen", icon: Home },
-    { label: "Influencer", path: "/influencerScreen", icon: User },
+    { label: "Influencer", path: "/influencerScreen", icon: Users },
     { label: "Match", path: "/matchInfluencerScreen", icon: Search },
-    { label: "Business", path: "/userBusinessScreen", icon: Briefcase }
+    { label: "Business", path: "/userBusinessScreen", icon: Briefcase },
+    { label: "User", path: "/userScreen", icon: User }
+
 ] as const;
 
 const styles = StyleSheet.create({

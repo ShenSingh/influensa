@@ -3,6 +3,7 @@ import {ChevronRight} from "lucide-react-native";
 import React from "react";
 import {RecommendationResult} from "@/app/(dashboard)/matchInfluencerScreen";
 import { convertGoogleDriveUrl } from '@/utils/googleDriveUtils';
+import {router} from "expo-router";
 
 interface RecentMatchesInfluencersProps {
     recommendations: RecommendationResult[];
@@ -50,6 +51,13 @@ export const RecentMatchesInfluencers = ({ recommendations }: RecentMatchesInflu
                                 <TouchableOpacity
                                     key={recommendation.username}
                                     className="bg-white rounded-xl shadow-sm p-4 flex-row items-center"
+                                    onPress={() => {
+                                        // Navigate to influencer profile page with ID
+                                        router.push({
+                                            pathname: '/(dashboard)/influencerProfileScreen',
+                                            params: { influencerId: recommendation.influencer._id }
+                                        });
+                                    }}
                                 >
                                     <Image
                                         source={{
@@ -66,7 +74,7 @@ export const RecentMatchesInfluencers = ({ recommendations }: RecentMatchesInflu
                                         </Text>
                                         <View className="flex-row items-center mt-1">
                                             <Text className="text-indigo-600 font-medium">
-                                                Match: {Math.round(recommendation.similarity_score)}%
+                                                Match: {Math.round(recommendation.similarity_score*100)}%
                                             </Text>
                                         </View>
                                     </View>

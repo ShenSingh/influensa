@@ -11,19 +11,58 @@ import {Business} from "@/types/Business";
 import BusinessService from "@/services/business.service";
 import {RecommendationResult} from "@/app/(dashboard)/matchInfluencerScreen";
 import {getRecommendInfluencer} from "@/services/match-ai.service";
+import {Influencer} from "@/types/Influencer";
+import InfluencerService from "@/services/influencer.service";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
+  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [topInfluencers, setTopInfluencers] = useState<Influencer[]>([]);
+
 
 
 
   useEffect(() => {
     loadBusinessDetails()
-
-
+    fetchInfluencers()
   }, []);
+
+
+  // Helper function to convert follower string to number
+  const parseFollowerCount = (followerStr: string): number => {
+    if (typeof followerStr !== 'string') return 0;
+
+    const cleanStr = followerStr.replace(/,/g, '').toUpperCase();
+
+    if (cleanStr.includes('K')) {
+      return parseFloat(cleanStr.replace('K', '')) * 1000;
+    } else if (cleanStr.includes('M')) {
+      return parseFloat(cleanStr.replace('M', '')) * 1000000;
+    } else if (cleanStr.includes('B')) {
+      return parseFloat(cleanStr.replace('B', '')) * 1000000000;
+    }
+
+    return parseFloat(cleanStr) || 0;
+  };
+
+  const fetchInfluencers = async () => {
+    try {
+      const data = await InfluencerService.getAllInfluencers();
+      console.log("data is : "+data);
+      setInfluencers(data);
+
+      // Sort influencers by followers count in descending order and take top 5
+      const sortedByFollowers = [...data].sort((a, b) =>
+          parseFollowerCount(b.followers) - parseFollowerCount(a.followers)
+      );
+      setTopInfluencers(sortedByFollowers.slice(0, 5));
+
+    } catch (err) {
+      console.error('Failed to fetch influencers:', err);
+    }
+  };
 
   useEffect(() => {
     if (businesses.length > 0) {
@@ -39,8 +78,8 @@ const HomeScreen = () => {
 
         // Ensure results is an array before setting state
         if (Array.isArray(results)) {
-          // Take only top 3 recommendations
-          setRecommendations(results.slice(0, 3));
+          // Take only top 5 recommendations
+          setRecommendations(results.slice(0, 5));
         } else {
           console.error('API did not return an array:', results);
           setRecommendations([]);
@@ -96,7 +135,7 @@ const HomeScreen = () => {
           </View>
 
           {/* Top Influencers Section */}
-          <TopInfluencers />
+          <TopInfluencers top5Influencers={topInfluencers} />
 
           {/* Recent Matches Section */}
           <RecentMatchesInfluencers recommendations={recommendations} />

@@ -1,8 +1,6 @@
 import {Router} from "express";
 import {refreshToken, signIn, signOut, signUp} from "../controller/auth.controller";
 
-
-
 const authRouters = Router()
 
 authRouters.post("/signup", signUp)

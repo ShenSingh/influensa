@@ -4,7 +4,6 @@ import {UserModel} from "../models/User";
 import jwt, {JsonWebTokenError, JwtPayload, TokenExpiredError} from "jsonwebtoken"
 import {ApiError} from "../errors/ApiError";
 
-
 export const signUp = async (
     req: Request,
     res: Response,
@@ -33,9 +32,6 @@ export const signUp = async (
 export const signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
 
-
-        console.log(req.body);
-
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email });
 
@@ -44,7 +40,6 @@ export const signIn = async (req: Request, res: Response, next: NextFunction): P
             if (isMatch){
                 const accessToken = createAccessToken(user._id.toString());
                 const refreshToken = createRefreshToken(user._id.toString());
-
 
                 const isProd:boolean = process.env.NODE_ENV === "production";
 
@@ -61,8 +56,6 @@ export const signIn = async (req: Request, res: Response, next: NextFunction): P
                     email: user.email,
                     accessToken,
                 };
-
-                console.log(userWithoutPassword);
                 res.status(200).json(userWithoutPassword);
             }else {
                 res.status(401).send("Invalid credentials!");

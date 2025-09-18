@@ -20,16 +20,32 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       // Encode the message for URL
       const encodedMessage = encodeURIComponent(message);
 
-      // WhatsApp URL scheme
-      const whatsappUrl = `whatsapp://send?phone=${formattedNumber}&text=${encodedMessage}`;
+      // Try different WhatsApp URL schemes
+      const whatsappUrls = [
+        `whatsapp://send?phone=${formattedNumber}&text=${encodedMessage}`,
+        `https://wa.me/${formattedNumber}?text=${encodedMessage}`,
+        `https://api.whatsapp.com/send?phone=${formattedNumber}&text=${encodedMessage}`
+      ];
 
-      // Check if WhatsApp is installed
-      const supported = await Linking.canOpenURL(whatsappUrl);
+      let opened = false;
 
-      if (supported) {
-        await Linking.openURL(whatsappUrl);
-      } else {
-        // If WhatsApp is not installed, show alert with options
+      // Try each URL scheme
+      for (const url of whatsappUrls) {
+        try {
+          const supported = await Linking.canOpenURL(url);
+          if (supported) {
+            await Linking.openURL(url);
+            opened = true;
+            break;
+          }
+        } catch (urlError) {
+          console.log(`Failed to open ${url}:`, urlError);
+          continue;
+        }
+      }
+
+      if (!opened) {
+        // If all URL schemes failed, show alert with options
         Alert.alert(
           'WhatsApp not found',
           'WhatsApp is not installed on your device. Would you like to install it?',

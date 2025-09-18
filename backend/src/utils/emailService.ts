@@ -14,18 +14,14 @@ class EmailService {
     private transporter: nodemailer.Transporter;
 
     constructor() {
-        // Debug: Check if environment variables are loaded
-        console.log('Email configuration check:');
-        console.log('EMAIL_USER:', process.env.EMAIL_USER || 'systeminfo8962@gmail.com');
-        console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? '[SET]' : '[USING FALLBACK]');
 
         // Configure email transporter using your working configuration
         this.transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             tls: {
-                rejectUnauthorized: false, // Allow self-signed certificates
+                rejectUnauthorized: false,
             },
             service: "gmail",
             auth: {
@@ -35,18 +31,18 @@ class EmailService {
         });
 
         // Verify the connection configuration
-        this.transporter.verify((error, success) => {
-            if (error) {
-                console.error('❌ Email transporter verification failed:', error.message);
-            } else {
-                console.log('✅ Email transporter is ready to send messages');
-            }
-        });
+        // this.transporter.verify((error, success) => {
+        //     if (error) {
+        //         console.error(' Email transporter verification failed:', error.message);
+        //     } else {
+        //         console.log(' Email transporter is ready to send messages');
+        //     }
+        // });
     }
 
     async sendEmail(options: EmailOptions): Promise<void> {
         const mailOptions = {
-            from: '"Influensa" <systeminfo8962@gmail.com>',
+            from: '"Influenza" <systeminfo8962@gmail.com>',
             to: options.to,
             subject: options.subject,
             html: options.html
@@ -66,7 +62,7 @@ class EmailService {
 
         const html = `
             <!DOCTYPE html>
-            <html>
+            <html lang="English">
             <head>
                 <meta charset="utf-8">
                 <title>Password Reset Request</title>
@@ -110,11 +106,11 @@ class EmailService {
                         
                         <p>If you're having trouble clicking the button, you can also reset your password by going to the login page and clicking "Forgot Password".</p>
                         
-                        <p>Thanks,<br>The Influensa Team</p>
+                        <p>Thanks,<br>The Influenza Team</p>
                     </div>
                     <div class="footer">
                         <p>This email was sent to ${email}. If you didn't request this password reset, you can safely ignore this email.</p>
-                        <p>&copy; ${new Date().getFullYear()} Influensa. All rights reserved.</p>
+                        <p>&copy; ${new Date().getFullYear()} Influenza. All rights reserved.</p>
                     </div>
                 </div>
             </body>
@@ -123,7 +119,7 @@ class EmailService {
 
         await this.sendEmail({
             to: email,
-            subject: 'Reset Your Password - Influensa',
+            subject: 'Reset Your Password - Influenza',
             html: html
         });
     }

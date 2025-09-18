@@ -4,11 +4,11 @@ import {authenticateToken} from "../middlwares /authenticateToken";
 
 export const userRouter = Router()
 
-// Public routes (no authentication required)
-userRouter.post("/forgot-password", forgotPassword); // Forgot password doesn't need auth
-userRouter.post("/reset-password", resetPassword); // Reset password doesn't need auth
+// Public routes
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password", resetPassword);
 
-// Protected routes (authentication required)
+// Protected routes
 userRouter.use(authenticateToken);
 
 userRouter.get("/getAll", getAllUser)

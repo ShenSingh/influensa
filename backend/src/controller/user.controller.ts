@@ -68,25 +68,20 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
 };
 
 export const getUserByToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
-    console.log("awa")
     try {
         const accessToken = req.headers.authorization?.split(" ")[1];
 
         if (!accessToken) {
             throw new ApiError(401, "Access token is required");
         }
-
         const userId = getUserIdFromAccessToken(accessToken);
         if (!userId) {
             throw new ApiError(401, "Invalid access token");
         }
-
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new ApiError(404, "User Not Found!");
         }
-        console.log("User found by token:", user);
         res.status(200).json(user);
 
     } catch (e) {
@@ -104,102 +99,81 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
         if (!accessToken) {
             throw new ApiError(401, "Access token is required");
         }
-
         if (!currentPassword || !newPassword) {
             throw new ApiError(400, "Current password and new password are required");
         }
-
         const userId = getUserIdFromAccessToken(accessToken);
         if (!userId) {
             throw new ApiError(401, "Invalid access token");
         }
-
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new ApiError(404, "User Not Found!");
         }
-
-        // Use bcrypt to compare the current password with the hashed password
         const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
         if (!isCurrentPasswordValid) {
             throw new ApiError(400, "Current password is incorrect");
         }
 
-        // Hash the new password before saving
         const saltRounds = 10;
         const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
         user.password = hashedNewPassword;
         await user.save();
-
         res.status(200).json({ message: "Password changed successfully" });
-
     } catch (e) {
         console.log("Error in changePassword:", e);
         next(e);
     }
 }
 
-// Forgot Password - Complete Implementation
+// Forgot Password
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
-    console.log("awa hh")
     try {
         const { email } = req.body;
 
         if (!email) {
             throw new ApiError(400, "Email is required");
         }
-
         const user = await UserModel.findOne({ email });
         if (!user) {
-            // For security, don't reveal if email exists or not
-            console.log(`Password reset requested for non-existent email: ${email}`);
+            console.log(`Password reset request : ${email}`);
             res.status(200).json({
                 message: "If an account with that email exists, we've sent a password reset link",
                 info: "Check your email for reset instructions"
             });
             return;
         }
+        const resetToken = TokenGenerator.generateSecureToken();
+        const hashedToken = TokenGenerator.hashToken(resetToken);
 
-        // Step 1: Generate a secure reset token
-        const resetToken = TokenGenerator.generateSecureToken(); // 64-character hex string
-        const hashedToken = TokenGenerator.hashToken(resetToken); // Hash for database storage
-
-        // Step 2: Store hashed token in database with expiration (1 hour)
-        const tokenExpiration = TokenGenerator.createTokenExpiration(1); // 1 hour from now
+        const tokenExpiration = TokenGenerator.createTokenExpiration(1);
 
         user.resetPasswordToken = hashedToken;
         user.resetPasswordExpires = tokenExpiration;
         await user.save();
 
-        // Step 3: Send email with reset link containing the plain token
         try {
             await EmailService.sendPasswordResetEmail(email, resetToken, user.userName);
 
             console.log(`Password reset email sent to: ${email}`);
-            console.log(`Reset token generated (expires in 1 hour): ${resetToken.substring(0, 10)}...`);
-
             res.status(200).json({
                 message: "Password reset email sent successfully",
                 info: "Check your email for reset instructions"
             });
         } catch (emailError) {
-            // If email fails, clean up the reset token
             user.resetPasswordToken = null;
             user.resetPasswordExpires = null;
             await user.save();
 
-            console.error('Failed to send reset email:', emailError);
             throw new ApiError(500, "Failed to send reset email. Please try again later.");
         }
-
     } catch (e) {
         console.log("Error in forgotPassword:", e);
         next(e);
     }
 }
 
-// Reset Password - New endpoint for handling the reset
+// Reset Password
 export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { token, newPassword } = req.body;
@@ -207,15 +181,12 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
         if (!token || !newPassword) {
             throw new ApiError(400, "Reset token and new password are required");
         }
-
         if (newPassword.length < 6) {
             throw new ApiError(400, "Password must be at least 6 characters long");
         }
 
-        // Hash the provided token to compare with stored hash
         const hashedToken = TokenGenerator.hashToken(token);
 
-        // Find user with matching token that hasn't expired
         const user = await UserModel.findOne({
             resetPasswordToken: hashedToken,
             resetPasswordExpires: { $gt: new Date() } // Token must not be expired
@@ -225,15 +196,12 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
             throw new ApiError(400, "Invalid or expired reset token");
         }
 
-        // Hash the new password before saving (FIXED: was storing plain text)
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
         user.password = hashedPassword;
         user.resetPasswordToken = null;
         user.resetPasswordExpires = null;
         await user.save();
-
-        console.log(`Password reset successful for user: ${user.email}`);
 
         res.status(200).json({
             message: "Password reset successfully",

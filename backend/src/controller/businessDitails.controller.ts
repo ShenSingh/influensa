@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 
 
 export const getAllBusinessDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
     try{
         const businessDetails = await BusinessDetailModel.find();
 
@@ -18,11 +17,8 @@ export const getAllBusinessDetails = async (req: Request, res: Response, next: N
     }
 }
 
-// Get all business details for the authenticated user
 export const getBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.headers.authorization?.split(" ")[1];
-
-    console.log("token : "+token);
 
     if (!token) {
         res.status(401).json({ message: "No token provided" });
@@ -37,7 +33,6 @@ export const getBusinessDetail = async (req: Request, res: Response, next: NextF
     }
 
     try {
-        // Find ALL businesses for this user, not just one
         const businessDetails = await BusinessDetailModel.find({ userId: idFromToken });
         if (businessDetails.length > 0) {
             res.status(200).json(businessDetails);
@@ -67,7 +62,6 @@ export const getBusinessById = async (req: Request, res: Response, next: NextFun
 export const updateBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     try {
-        // Update by business _id, not userId
         const updatedBusinessDetail = await BusinessDetailModel.findByIdAndUpdate(id, req.body, { new: true });
         if (updatedBusinessDetail) {
             res.status(200).json(updatedBusinessDetail);
@@ -82,7 +76,6 @@ export const updateBusinessDetail = async (req: Request, res: Response, next: Ne
 export const deleteBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     try {
-        // Delete by business _id, not userId
         const deletedBusinessDetail = await BusinessDetailModel.findByIdAndDelete(id);
         if (!deletedBusinessDetail) {
             res.status(404).json({ message: "Business Detail Not Found!" });
@@ -94,7 +87,6 @@ export const deleteBusinessDetail = async (req: Request, res: Response, next: Ne
     }
 };
 
-// create business detail - ALLOW MULTIPLE BUSINESSES
 export const createBusinessDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
         const token = req.headers.authorization?.split(" ")[1];
@@ -120,8 +112,6 @@ export const createBusinessDetail = async (req: Request, res: Response, next: Ne
     }
 }
 
-
-// Helper function to extract user ID from token
 const getUserIdFromToken = (token: string): string | null => {
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as any;

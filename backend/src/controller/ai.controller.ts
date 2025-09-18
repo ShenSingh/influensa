@@ -34,7 +34,6 @@ export const getAIRecommendations = async (req: Request, res: Response) => {
         message: 'Valid business details are required'
       });
     }
-    console.log("business Details :" + businessDetails);
 
     const requestBody: RequestBody = {
       business_description: businessDetails.trim()
@@ -113,11 +112,9 @@ export const getAIRecommendations = async (req: Request, res: Response) => {
 
 
 async function findInfluencerByUsername(username: string): Promise<any> {
-
   const influencer = await InfluencerModel.findOne({socialName: username});
 
   if (influencer) {
-    console.log(`Influencer found: ${username}`);
     return influencer;
   } else {
     console.log(`Influencer not found: ${username}`);

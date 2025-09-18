@@ -4,6 +4,8 @@ import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { AppName } from '@/components/AppName';
 import UserService from '@/services/user.service';
+import * as os from "node:os";
+import {platform} from "node:os";
 
 export default function ResetPasswordScreen() {
     const { token } = useLocalSearchParams<{ token: string }>();
@@ -44,7 +46,7 @@ export default function ResetPasswordScreen() {
             setLoading(true);
 
             // Call the reset password API
-            const response = await fetch('http://localhost:3001/api/user/reset-password', {
+            const response = await fetch('http://172.20.10.4:3001/api/user/reset-password', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,18 +61,32 @@ export default function ResetPasswordScreen() {
 
             if (response.ok) {
                 setResetComplete(true);
-                Alert.alert(
-                    'Success!',
-                    'Your password has been reset successfully. You can now login with your new password.',
-                    [
-                        {
-                            text: 'Go to Login',
-                            onPress: () => router.replace('/(auth)/signInScreen')
-                        }
-                    ]
-                );
+
+                // Platform-specific success handling
+                if (Platform.OS === 'web') {
+                    // For web, we'll rely on the resetComplete state to show success UI
+                    // No alert needed as the UI will update automatically
+                } else {
+                    // For mobile platforms, show native alert
+                    Alert.alert(
+                        'Success!',
+                        'Your password has been reset successfully. You can now login with your new password.',
+                        [
+                            {
+                                text: 'Go to Login',
+                                onPress: () => router.replace('/(auth)/signInScreen')
+                            }
+                        ]
+                    );
+                }
             } else {
-                Alert.alert('Error', data.message || 'Failed to reset password. The link may have expired.');
+                // Error handling - platform-specific
+                if (Platform.OS === 'web') {
+                    // For web, use a simple alert or you could create a custom modal
+                    alert(data.message || 'Failed to reset password. The link may have expired.');
+                } else {
+                    Alert.alert('Error', data.message || 'Failed to reset password. The link may have expired.');
+                }
             }
         } catch (error) {
             console.error('Error resetting password:', error);
@@ -133,7 +149,7 @@ export default function ResetPasswordScreen() {
     return (
         <View className="flex-1 bg-gray-50">
             {/* Header */}
-            <View className="bg-indigo-600 p-6 pt-12 rounded-b-3xl">
+            <View className="bg-indigo-600 rounded-b-3xl">
                 <View className="flex-row items-center justify-center mt-10">
                     <AppName fontSize={32} color="#fff" />
                 </View>

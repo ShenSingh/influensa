@@ -34,8 +34,6 @@ export default function MatchInfluencerScreen() {
         setLoading(true);
         try {
             const results = await getRecommendInfluencer(businessDetails);
-            console.log('API Response:', results);
-
 
             // Ensure results is an array before setting state
             if (Array.isArray(results)) {
@@ -54,8 +52,6 @@ export default function MatchInfluencerScreen() {
             setLoading(false);
         }
     };
-
-
 
     return (
         <View className="flex-1 bg-white">

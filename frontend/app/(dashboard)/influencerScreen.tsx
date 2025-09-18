@@ -34,7 +34,6 @@ const InfluencerScreen = () => {
             try {
                 setLoading(true);
                 const data = await InfluencerService.getAllInfluencers();
-                console.log("data is : "+data);
                 setInfluencers(data);
                 setFilteredInfluencers(data);
                 setError(null);

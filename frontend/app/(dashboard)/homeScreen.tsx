@@ -14,6 +14,7 @@ import {getRecommendInfluencer} from "@/services/match-ai.service";
 import {Influencer} from "@/types/Influencer";
 import InfluencerService from "@/services/influencer.service";
 import {HomeBusinessProfileCard} from "@/components/HomeBusinessProfileCard";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,7 +52,6 @@ const HomeScreen = () => {
   const fetchInfluencers = async () => {
     try {
       const data = await InfluencerService.getAllInfluencers();
-      console.log("data is : "+data);
       setInfluencers(data);
 
       // Sort influencers by followers count in descending order and take top 5
@@ -75,7 +75,6 @@ const HomeScreen = () => {
     try{
       if (businesses.length > 0){
         const results = await getRecommendInfluencer(businesses[0].description);
-        console.log('API Response:', results);
 
         // Ensure results is an array before setting state
         if (Array.isArray(results)) {
@@ -97,7 +96,6 @@ const HomeScreen = () => {
   const loadBusinessDetails = async () => {
     try {
       const response = await BusinessService.getUserBusinesses();
-      console.log('API Response:', response);
       // Backend now returns an array, so we can use it directly
       setBusinesses(response || []);
 
@@ -143,6 +141,12 @@ const HomeScreen = () => {
           {/* Home Business Profile Card*/}
           <HomeBusinessProfileCard businessDetails = {businesses[0]} />
         </ScrollView>
+
+        {/* WhatsApp Floating Action Button */}
+        <WhatsAppButton
+          phoneNumber="+14155238886"
+          message="Hi! I'm interested in connecting with influencers through your platform."
+        />
 
         {/*<FooterNav />*/}
         {

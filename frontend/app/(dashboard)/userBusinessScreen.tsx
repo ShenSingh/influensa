@@ -29,7 +29,6 @@ export default function UserBusinessScreen() {
         try {
             setLoading(true);
             const response = await BusinessService.getUserBusinesses();
-            console.log('API Response:', response);
 
             // Backend now returns an array, so we can use it directly
             setBusinesses(response || []);
@@ -112,7 +111,6 @@ export default function UserBusinessScreen() {
     };
 
     const handleDelete = (business: Business) => {
-        console.log('API Response:', business);
         Alert.alert(
             'Confirm Delete',
             `Are you sure you want to delete "${business.businessName}"?`,

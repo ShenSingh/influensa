@@ -158,7 +158,7 @@ export default function InfluencerProfileScreen() {
                             <Text className="text-white font-semibold ml-2">View on Instagram</Text>
                         </TouchableOpacity>
                     )}
-
+                    
                     <TouchableOpacity className="bg-gray-100 rounded-xl px-6 py-3 flex-row items-center">
                         <Heart color="#EF4444" size={20} />
                         <Text className="text-gray-700 font-semibold ml-2">Save</Text>

@@ -121,10 +121,10 @@ export default function UserScreen() {
             Alert.alert('Success', 'Password changed successfully!');
         } catch (error: any) {
             console.error('Error changing password:', error);
-
+            
             // Extract the specific error message from the backend
             let errorMessage = 'Failed to change password. Please try again.';
-
+            
             if (error.response?.data?.message) {
                 // Backend sent a specific error message
                 errorMessage = error.response.data.message;
@@ -132,7 +132,7 @@ export default function UserScreen() {
                 // Axios error message
                 errorMessage = error.message;
             }
-
+            
             Alert.alert('Error', errorMessage);
         } finally {
             setSaving(false);

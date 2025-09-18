@@ -49,7 +49,7 @@ const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardPro
             </View>
           )}
         </View>
-
+        
         {/* Instagram Username - Clickable */}
         {influencer.socialName && (
           <TouchableOpacity onPress={handleInstagramPress} className="flex-row items-center mt-1">
@@ -57,7 +57,7 @@ const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardPro
             <Text className="text-pink-600 text-sm ml-1 font-medium">@{influencer.socialName}</Text>
           </TouchableOpacity>
         )}
-
+        
         <Text className="text-indigo-600 text-sm mt-1">{influencer.niche}</Text>
         <View className="flex-row items-center mt-2">
           <MapPin color="#9CA3AF" size={14} />

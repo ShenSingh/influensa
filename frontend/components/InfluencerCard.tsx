@@ -1,12 +1,14 @@
 import React, {useEffect} from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
-import { Star, Heart, MapPin, Users } from 'lucide-react-native';
+import { Star, Heart, MapPin, Users, MessageCircle } from 'lucide-react-native';
 import { convertGoogleDriveUrl } from '../utils/googleDriveUtils';
+import SocialMediaUtils from '../utils/socialMediaUtils';
 
 interface InfluencerCardProps {
   influencer: {
     id: string;
     name: string;
+    socialName?: string; // Added Instagram username
     niche: string;
     followers: string;
     engagement: number;
@@ -20,8 +22,13 @@ interface InfluencerCardProps {
 
 const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardProps) => {
 
-  return (
+  const handleInstagramPress = () => {
+    if (influencer.socialName) {
+      SocialMediaUtils.showInstagramOptions(influencer.socialName, influencer.name);
+    }
+  };
 
+  return (
     <TouchableOpacity
       className="bg-white rounded-2xl shadow-sm p-4 mb-4 flex-row"
       onPress={onPress}
@@ -42,6 +49,15 @@ const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardPro
             </View>
           )}
         </View>
+
+        {/* Instagram Username - Clickable */}
+        {influencer.socialName && (
+          <TouchableOpacity onPress={handleInstagramPress} className="flex-row items-center mt-1">
+            <MessageCircle color="#E1306C" size={14} />
+            <Text className="text-pink-600 text-sm ml-1 font-medium">@{influencer.socialName}</Text>
+          </TouchableOpacity>
+        )}
+
         <Text className="text-indigo-600 text-sm mt-1">{influencer.niche}</Text>
         <View className="flex-row items-center mt-2">
           <MapPin color="#9CA3AF" size={14} />
@@ -50,20 +66,13 @@ const InfluencerCard = ({ influencer, onPress, onHeartPress }: InfluencerCardPro
         <View className="flex-row justify-between mt-3">
           <View className="flex-row items-center">
             <Users color="#9CA3AF" size={14} />
-            <Text className="text-gray-700 text-sm ml-1">{influencer.followers}</Text>
+            <Text className="text-gray-500 text-xs ml-1">{influencer.followers} followers</Text>
           </View>
-          <View className="flex-row items-center">
-            <Star color="#FBBF24" fill="#FBBF24" size={14} />
-            <Text className="text-gray-700 text-sm ml-1">{influencer.engagement}%</Text>
-          </View>
+          <TouchableOpacity onPress={onHeartPress} className="p-1">
+            <Heart color="#EF4444" size={16} />
+          </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity
-        className="ml-2"
-        onPress={onHeartPress}
-      >
-        <Heart color="#9CA3AF" size={20} />
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 };

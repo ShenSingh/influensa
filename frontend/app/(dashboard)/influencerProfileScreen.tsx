@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {View, Text, Image, ScrollView, TouchableOpacity, Dimensions, Platform} from 'react-native';
 import { Star, Users, Heart, MessageCircle, Share2, Bookmark, Home, User, Search, Briefcase } from 'lucide-react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import FooterNav from "@/components/FooterNav";
 import AppleFooterNav from "@/components/AppleFooterNav";
 import InfluencerService from '@/services/influencer.service';
 import { Influencer } from '@/types/Influencer';
 import { convertGoogleDriveUrl } from '@/utils/googleDriveUtils';
+import SocialMediaUtils from '@/utils/socialMediaUtils';
 
 const { width } = Dimensions.get('window');
 const imageWidth = width;
 
 export default function InfluencerProfileScreen() {
     const { influencerId } = useLocalSearchParams<{ influencerId: string }>();
+    const router = useRouter();
     const [influencer, setInfluencer] = useState<Influencer | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -93,60 +95,74 @@ export default function InfluencerProfileScreen() {
                     <View className="flex-row justify-between items-center mt-6">
                         <Text className="text-2xl font-bold text-white">{influencer.name}</Text>
                     </View>
+
+                    {/* Instagram Username - Clickable */}
+                    {influencer.socialName && (
+                        <TouchableOpacity
+                            onPress={() => SocialMediaUtils.showInstagramOptions(influencer.socialName, influencer.name)}
+                            className="flex-row items-center mt-2 bg-white/10 rounded-full px-3 py-2 self-start"
+                        >
+                            <MessageCircle color="#E1306C" size={16} />
+                            <Text className="text-white font-medium ml-2">@{influencer.socialName}</Text>
+                            <Text className="text-white/70 text-sm ml-2">• Tap to message</Text>
+                        </TouchableOpacity>
+                    )}
+
                     <View className="flex-row items-center mt-2">
                         <Text className="text-white/90 text-base">{influencer.niche}</Text>
                         <View className="flex-row items-center ml-4">
                             <Star size={16} color="#FFD700" />
                             <Text className="text-white ml-1">{influencer.engagement}</Text>
                         </View>
-                        {influencer.verified && (
-                            <View className="ml-4 bg-white/20 rounded-full px-2 py-1">
-                                <Text className="text-white text-xs">Verified</Text>
-                            </View>
-                        )}
                     </View>
                 </View>
 
-                {/* Profile Info Section */}
-                <View className="px-4 -mt-6">
-                    <View className="bg-white rounded-xl shadow-lg p-4 mb-4">
-                        <View className="flex-row">
-                            <Image
-                                source={{ uri: profileImageUrl }}
-                                className="w-24 h-24 rounded-xl"
-                                onError={(error) => {
-                                    console.log('Profile image load error:', error.nativeEvent.error);
-                                }}
-                            />
-                            <View className="flex-1 ml-4">
-                                <Text className="text-gray-600 mb-2">@{influencer.socialName}</Text>
-                                <Text className="text-gray-600 mb-2">{influencer.location}</Text>
-                                <View className="flex-row items-center">
-                                    <Users size={16} color="#6E44FF" />
-                                    <Text className="ml-1 text-gray-700">{influencer.followers} followers</Text>
-                                    <View className="bg-[#6E44FF]/10 px-2 py-1 rounded-full ml-3">
-                                        <Text className="text-[#6E44FF] font-medium">{influencer.engagement}% Engagement</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
+                {/* Profile Image Section */}
+                <View className="items-center -mt-16 mb-6">
+                    <Image
+                        source={{ uri: profileImageUrl }}
+                        style={{ width: 120, height: 120 }}
+                        className="rounded-full border-4 border-white"
+                        onError={(error) => {
+                            console.log('Profile image load error:', error.nativeEvent.error);
+                        }}
+                    />
                 </View>
 
                 {/* Stats Section */}
-                <View className="flex-row justify-between px-4 py-4">
-                    <View className="items-center flex-1">
-                        <Text className="text-xl font-bold text-gray-800">{Math.floor(Math.random() * 1000) + 100}</Text>
-                        <Text className="text-gray-600">Posts</Text>
+                <View className="flex-row justify-around px-4 mb-6">
+                    <View className="items-center">
+                        <Text className="text-2xl font-bold text-gray-900">{influencer.followers}</Text>
+                        <Text className="text-gray-500 text-sm">Followers</Text>
                     </View>
-                    <View className="items-center flex-1">
-                        <Text className="text-xl font-bold text-gray-800">{influencer.followers}</Text>
-                        <Text className="text-gray-600">Followers</Text>
+                    <View className="items-center">
+                        <Text className="text-2xl font-bold text-gray-900">{influencer.engagement}%</Text>
+                        <Text className="text-gray-500 text-sm">Engagement</Text>
                     </View>
-                    <View className="items-center flex-1">
-                        <Text className="text-xl font-bold text-gray-800">{Math.floor(Math.random() * 500) + 50}</Text>
-                        <Text className="text-gray-600">Following</Text>
+                    <View className="items-center">
+                        <Text className="text-2xl font-bold text-gray-900">{influencer.location}</Text>
+                        <Text className="text-gray-500 text-sm">Location</Text>
                     </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View className="flex-row justify-center space-x-4 px-4 mb-6">
+                    {/* Instagram Profile Button */}
+                    {influencer.socialName && (
+                        <TouchableOpacity
+                            className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl px-6 py-3 flex-row items-center flex-1 mr-2"
+                            onPress={() => SocialMediaUtils.openInstagramProfile(influencer.socialName)}
+                            style={{ backgroundColor: '#E1306C' }}
+                        >
+                            <MessageCircle color="white" size={20} />
+                            <Text className="text-white font-semibold ml-2">View on Instagram</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity className="bg-gray-100 rounded-xl px-6 py-3 flex-row items-center">
+                        <Heart color="#EF4444" size={20} />
+                        <Text className="text-gray-700 font-semibold ml-2">Save</Text>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Content Metrics */}
@@ -178,7 +194,10 @@ export default function InfluencerProfileScreen() {
                         <TouchableOpacity className="bg-[#6E44FF]/10 px-4 py-2 rounded-full">
                             <Text className="text-[#6E44FF]">Social Media</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity className="bg-[#6E44FF]/10 px-4 py-2 rounded-full">
+                        <TouchableOpacity
+                            className="bg-[#6E44FF]/10 px-4 py-2 rounded-full"
+                        >
+
                             <Text className="text-[#6E44FF]">Content Creator</Text>
                         </TouchableOpacity>
                     </View>

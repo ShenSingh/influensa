@@ -72,6 +72,7 @@ export const getUserByToken = async (req: Request, res: Response, next: NextFunc
         const accessToken = req.headers.authorization?.split(" ")[1];
 
         if (!accessToken) {
+            console.log("Access token missing in headers");
             throw new ApiError(401, "Access token is required");
         }
         const userId = getUserIdFromAccessToken(accessToken);

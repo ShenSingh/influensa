@@ -12,7 +12,8 @@ export default {
       prefixes: ["influenza://"],
       config: {
         screens: {
-          "reset-password": "reset-password"
+          "reset-password": "reset-password",
+          "(auth)/signInScreen": "(auth)/signInScreen"
         }
       }
     },

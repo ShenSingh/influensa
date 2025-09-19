@@ -53,11 +53,26 @@ export default function ResetPasswordScreen() {
 
             // Platform-specific success handling
             if (Platform.OS === 'web') {
-                console.log("web")
-                // For web, use simple browser alert and then navigate
-                alert('Success! Your password has been reset successfully. You can now login with your new password.');
-                // Navigate to login after user dismisses the alert
-                router.replace('/(auth)/signInScreen');
+                console.log("web");
+
+                // Use the correct deep link format for Expo Go
+                const deepLink = 'influenza:///(auth)/signInScreen';
+
+                // Attempt to open in app
+                window.location.href = deepLink;
+
+                // Fallback: Show alert and provide manual option
+                setTimeout(() => {
+                    const shouldOpenApp = confirm(
+                        'Password reset successful! Click OK to open in the app, or Cancel to stay in browser.'
+                    );
+
+                    if (shouldOpenApp) {
+                        window.location.href = deepLink;
+                    } else {
+                        alert('Password reset successful! Please open the app to login with your new password.');
+                    }
+                }, 500);
             } else {
                 // For mobile platforms, show native alert
                 Alert.alert(

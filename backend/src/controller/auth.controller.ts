@@ -31,7 +31,6 @@ export const signUp = async (
 
 export const signIn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try{
-
         const { email, password } = req.body;
         const user = await UserModel.findOne({ email });
 
@@ -47,7 +46,8 @@ export const signIn = async (req: Request, res: Response, next: NextFunction): P
                     httpOnly: true,
                     secure: isProd,
                     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-                    path: "api/auth/refresh-token",
+                    path: "/",
+                    sameSite: 'strict'
                 });
 
                 const userWithoutPassword = {
@@ -75,7 +75,7 @@ export const signOut = async (req: Request, res: Response, next: NextFunction): 
             httpOnly: true,
             secure: isProd,
             maxAge: 0,
-            path: "api/auth/refresh-token",
+            path: "/",
         });
         res.status(200).json({ message: "Logged out successfully!" });
     } catch (e: any) {
@@ -102,47 +102,48 @@ const createRefreshToken = (userId: string): string => {
 
 export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const token = req.cookies.refreshToken;
+        const refreshToken = req.cookies.refreshToken;
 
-        if (token) {
-            jwt.verify(
-                token,
-                process.env.REFRESH_TOKEN_SECRET!,
-                async (err: Error | null, decoded: string | JwtPayload | undefined) => {
-                    if (err) {
-                        if (err instanceof TokenExpiredError) {
-                            next(new ApiError(401, "Refresh token expired!"));
-                        } else if (err instanceof JsonWebTokenError) {
-                            console.error("Invalid refresh token:", err);
-                            next(new ApiError(401, "Invalid refresh token!"));
-                        } else {
-                            console.error("Unknown JWT error:", err);
-                            next(new ApiError(401, "Refresh token error!"));
-                        }
-                        return;
-                    }
-
-                    if (!decoded || typeof decoded === "string" || !("userId" in decoded)) {
-                        console.error("Invalid refresh token payload:", decoded);
-                        throw new ApiError(401, "Refresh payload error!");
-                    }
-
-                    const userId = decoded.userId;
-                    const user = await UserModel.findById(userId);
-
-                    if (user) {
-                        const newAccessToken = createAccessToken(userId);
-                        res.status(200).json({ accessToken: newAccessToken });
-                    } else {
-                        throw new ApiError(404, "User not found!");
-                    }
-                }
-            );
-        }else {
-            console.error("Refresh token not provided");
-            throw new ApiError(401, "Refresh token not provided!");
+        if (!refreshToken) {
+            console.log("Refresh token not provided");
+            return next(new ApiError(401, "Refresh token not provided"));
         }
-    } catch (e: any) {
+
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, async (err: any, decoded: any) => {
+            if (err) {
+                if (err instanceof TokenExpiredError) {
+                    console.log("Refresh token expired:", err);
+                    return next(new ApiError(403, "Refresh token expired"));
+                } else if (err instanceof JsonWebTokenError) {
+                    console.error("Invalid refresh token:", err);
+                    return next(new ApiError(401, "Invalid refresh token"));
+                } else {
+                    console.error("Refresh token verification error:", err);
+                    return next(new ApiError(401, "Could not verify refresh token"));
+                }
+            }
+
+            if (!decoded || typeof decoded === "string") {
+                console.error("Invalid refresh token payload:", decoded);
+                return next(new ApiError(401, "Invalid refresh token payload"));
+            }
+
+            // Verify user still exists
+            const user = await UserModel.findById(decoded.userId);
+            if (!user) {
+                return next(new ApiError(404, "User not found"));
+            }
+
+            // Generate new access token
+            const newAccessToken = createAccessToken(user._id.toString());
+
+            res.status(200).json({
+                accessToken: newAccessToken,
+                message: "Token refreshed successfully"
+            });
+        });
+    } catch (e) {
+        console.error("Error in refresh token:", e);
         next(e);
     }
 };

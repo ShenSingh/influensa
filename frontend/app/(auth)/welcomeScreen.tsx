@@ -5,11 +5,9 @@ import {router} from "expo-router";
 import {AppName} from "@/components/AppName";
 
 const WelcomeScreen = () => {
-
     const onContinue = () => {
         router.replace("/(auth)/signInScreen");
     }
-
     return (
         <View className="flex-1 bg-[#F7F7FF]">
             <ScrollView className="flex-1">
@@ -19,14 +17,12 @@ const WelcomeScreen = () => {
                         Connect with top influencers for your brand
                     </Text>
                 </View>
-
                 <View className="items-center mb-12 mt-16">
                     <Image
                         source={require("../../assets/images/wellcome-image.png")}
                         style={{ width: 300, height: 300, resizeMode: "contain" }}
                     />
                 </View>
-
                 <View className="px-8 mb-12">
                     <Text className="text-xl font-semibold text-[#2C2C2C] text-center mb-4">
                         Discover Your Perfect Influencer Match
@@ -35,7 +31,6 @@ const WelcomeScreen = () => {
                         Our AI-powered platform connects brands with influencers who align with your values and audience.
                     </Text>
                 </View>
-
                 <TouchableOpacity
                     className="bg-[#6E44FF] py-4 px-8 rounded-xl mx-8 mb-8 flex-row items-center justify-center"
                     onPress={onContinue}

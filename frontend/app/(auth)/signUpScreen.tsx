@@ -25,8 +25,6 @@ const SignUpScreen = () => {
         password: password
       });
 
-
-
       // Navigate to dashboard on successful signup
       router.replace("/(dashboard)/homeScreen");
     } catch (error: any) {

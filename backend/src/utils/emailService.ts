@@ -58,7 +58,10 @@ class EmailService {
     }
 
     async sendPasswordResetEmail(email: string, resetToken: string, userName: string): Promise<void> {
-        const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+        // Use deep link URL to open in your app instead of web browser
+        const resetUrl = `influenza://reset-password?token=${resetToken}`;
+        // Fallback web URL for users who don't have the app installed
+        const webResetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
         const html = `
             <!DOCTYPE html>
@@ -82,17 +85,22 @@ class EmailService {
                         <h1>Password Reset Request</h1>
                     </div>
                     <div class="content">
-                        <p>Hi ${userName},</p>
+                        <h2>Hello ${userName}!</h2>
                         
-                        <p>You recently requested to reset your password for your Influensa account. Click the button below to reset it:</p>
+                        <p>We received a request to reset your password for your Influenza account. If you made this request, click the button below to reset your password:</p>
                         
-                        <p style="text-align: center;">
-                            <a href="${resetUrl}" class="button">Reset Your Password</a>
-                        </p>
+                        <div style="text-align: center;">
+                            <a href="${resetUrl}" class="button">Reset Password in App</a>
+                        </div>
+                        
+                        <p>If the app button doesn't work, you can also use this web link:</p>
+                        <div style="text-align: center;">
+                            <a href="${webResetUrl}" class="button" style="background-color: #6b7280;">Reset Password in Browser</a>
+                        </div>
                         
                         <p>Or copy and paste this link into your browser:</p>
                         <p style="word-break: break-all; background-color: #f1f1f1; padding: 10px; border-radius: 5px;">
-                            ${resetUrl}
+                            ${webResetUrl}
                         </p>
                         
                         <div class="warning">

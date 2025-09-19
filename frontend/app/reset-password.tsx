@@ -4,8 +4,6 @@ import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { AppName } from '@/components/AppName';
 import UserService from '@/services/user.service';
-import * as os from "node:os";
-import {platform} from "node:os";
 
 export default function ResetPasswordScreen() {
     const { token } = useLocalSearchParams<{ token: string }>();
@@ -45,52 +43,44 @@ export default function ResetPasswordScreen() {
         try {
             setLoading(true);
 
-            // Call the reset password API
-            const response = await fetch('http://172.20.10.4:3001/api/user/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: token,
-                    newPassword: newPassword.trim(),
-                }),
+            // Call the reset password service method
+            await UserService.resetPassword({
+                token: token,
+                newPassword: newPassword.trim(),
             });
 
-            const data = await response.json();
+            setResetComplete(true);
 
-            if (response.ok) {
-                setResetComplete(true);
-
-                // Platform-specific success handling
-                if (Platform.OS === 'web') {
-                    // For web, we'll rely on the resetComplete state to show success UI
-                    // No alert needed as the UI will update automatically
-                } else {
-                    // For mobile platforms, show native alert
-                    Alert.alert(
-                        'Success!',
-                        'Your password has been reset successfully. You can now login with your new password.',
-                        [
-                            {
-                                text: 'Go to Login',
-                                onPress: () => router.replace('/(auth)/signInScreen')
-                            }
-                        ]
-                    );
-                }
+            // Platform-specific success handling
+            if (Platform.OS === 'web') {
+                console.log("web")
+                // For web, use simple browser alert and then navigate
+                alert('Success! Your password has been reset successfully. You can now login with your new password.');
+                // Navigate to login after user dismisses the alert
+                router.replace('/(auth)/signInScreen');
             } else {
-                // Error handling - platform-specific
-                if (Platform.OS === 'web') {
-                    // For web, use a simple alert or you could create a custom modal
-                    alert(data.message || 'Failed to reset password. The link may have expired.');
-                } else {
-                    Alert.alert('Error', data.message || 'Failed to reset password. The link may have expired.');
-                }
+                // For mobile platforms, show native alert
+                Alert.alert(
+                    'Success!',
+                    'Your password has been reset successfully. You can now login with your new password.',
+                    [
+                        {
+                            text: 'Go to Login',
+                            onPress: () => router.replace('/(auth)/signInScreen')
+                        }
+                    ]
+                );
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error resetting password:', error);
-            Alert.alert('Error', 'Failed to reset password. Please check your internet connection and try again.');
+            // Platform-specific error handling
+            const errorMessage = error?.response?.data?.message || 'Failed to reset password. The link may have expired.';
+
+            if (Platform.OS === 'web') {
+                alert(errorMessage);
+            } else {
+                Alert.alert('Error', errorMessage);
+            }
         } finally {
             setLoading(false);
         }

@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Platform } from 'react-native';
 import { Search, Filter, User } from 'lucide-react-native';
-import { router } from "expo-router";
 import FooterNav from "@/components/FooterNav";
 import {TopInfluencers} from "@/components/TopInfluencers";
 import {RecentMatchesInfluencers} from "@/components/RecentMatchesInfluencers";
@@ -23,9 +22,6 @@ const HomeScreen = () => {
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
   const [topInfluencers, setTopInfluencers] = useState<Influencer[]>([]);
 
-
-
-
   useEffect(() => {
     loadBusinessDetails()
     fetchInfluencers()
@@ -45,7 +41,6 @@ const HomeScreen = () => {
     } else if (cleanStr.includes('B')) {
       return parseFloat(cleanStr.replace('B', '')) * 1000000000;
     }
-
     return parseFloat(cleanStr) || 0;
   };
 
@@ -76,12 +71,9 @@ const HomeScreen = () => {
       if (businesses.length > 0){
         const results = await getRecommendInfluencer(businesses[0].description);
 
-        // Ensure results is an array before setting state
         if (Array.isArray(results)) {
-          // Take only top 5 recommendations
           setRecommendations(results.slice(0, 5));
         } else {
-          console.error('API did not return an array:', results);
           setRecommendations([]);
         }
       } else {

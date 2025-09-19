@@ -175,6 +175,8 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
 // Reset Password
 export const resetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    console.log("Reset password request received");
     try {
         const { token, newPassword } = req.body;
 

@@ -16,6 +16,11 @@ export interface ForgotPasswordRequest {
   email: string;
 }
 
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
 class UserService {
   // Get current user profile
   async getUserProfile(): Promise<GetUser> {
@@ -75,6 +80,20 @@ class UserService {
       throw error;
     }
   }
+
+  // reset password method
+  async resetPassword(resetData: ResetPasswordRequest): Promise<void> {
+    try {
+      await apiClient.post('/api/user/reset-password', resetData);
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      throw error;
+    }
+  }
+
 }
+
+
+
 
 export default new UserService();

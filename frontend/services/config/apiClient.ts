@@ -1,5 +1,6 @@
 import axios, {AxiosError} from "axios"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {router} from "expo-router";
 
 export const BASE_URL = "http://172.20.10.4:3001"
 
@@ -86,11 +87,12 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest)
         } catch (e) {
           if (e instanceof AxiosError){
-            if (e.response?.status == 401){
+            if (e.response?.status == 405){
               // Clear auth data and handle logout in React Native
               await AsyncStorage.multiRemove(['accessToken', 'userData']);
               // You can emit an event here to handle navigation to login screen
               console.log('Authentication failed, user needs to login again');
+              router.replace('/(auth)/signInScreen');
             }
           }
           console.log(e)

@@ -5,9 +5,17 @@ export default {
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/logo/black-logo.png",
-    scheme: "Influenza",
+    scheme: "influenza",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    linking: {
+      prefixes: ["influenza://"],
+      config: {
+        screens: {
+          "reset-password": "reset-password"
+        }
+      }
+    },
     splash: {
       image: "./assets/images/logo/black-logo.png",
       resizeMode: "contain",

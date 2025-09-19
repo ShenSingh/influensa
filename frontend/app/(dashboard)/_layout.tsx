@@ -1,6 +1,5 @@
 import React from "react";
 import { Stack } from "expo-router";
-import FooterNav from "@/components/FooterNav";
 
 const DashboardLayout = () => {
   return (

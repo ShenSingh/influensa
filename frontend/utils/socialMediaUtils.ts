@@ -25,7 +25,7 @@ export class SocialMediaUtils {
   }
 
   /**
-   * Opens Instagram direct message to a specific user (opens user's chat screen)
+y   * Opens Instagram direct message to a specific user (opens user's chat screen)
    * @param username - Instagram username (without @)
    */
   static async openInstagramDM(username: string): Promise<void> {

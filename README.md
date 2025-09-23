@@ -126,3 +126,11 @@ To get the project up and running on your local machine, follow these steps:
     ```
 
 Make sure to configure the environment variables in each component's `.env` file to match your local setup (e.g., database connection strings, API keys).
+
+## Contact
+
+For any inquiries or support, please contact:
+
+- **Name:** Gayashan Ashinshana
+- **Email:** gayashan9090@gmail.com
+- **LinkedIn:** [linkedin.com/in/gayashanashinshana](https://linkedin.com/in/gayashanashinshana)

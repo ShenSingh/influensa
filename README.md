@@ -11,6 +11,19 @@ The platform is divided into four main components:
 -   **AI-Model**: A Python-based machine learning model that analyzes influencer data and provides intelligent recommendations based on various metrics.
 -   **WhatsApp Bot**: An integrated Twilio bot that allows users to interact with the platform and receive influencer recommendations directly through WhatsApp.
 
+## Screenshots
+
+Below are some screenshots of the Influensa mobile application:
+
+| Home Screen | AI Match | WhatsApp Integration |
+|-------------|----------|---------------------|
+| ![Home](screenshot/influenza-home.png) | ![AI Match](screenshot/influenza-ai_match.png) | ![WhatsApp](screenshot/influenza-ai_whastapp.png) |
+
+| Influencer List | Influencer Details | Welcome Screen |
+|-----------------|-------------------|----------------|
+| ![Influencer List](screenshot/influenza-influencer.png) | ![Influencer Details](screenshot/influenza-influencerdetails.png) | ![Welcome](screenshot/influenza-welcome.png) |
+
+
 ## Technologies Used
 
 ### Frontend
@@ -60,6 +73,11 @@ The platform is divided into four main components:
 
 ### Cross-Platform
 - **WhatsApp Integration**: Users can interact with the service via a Twilio-powered WhatsApp bot to get recommendations.
+
+## Download APK
+
+You can download the latest APK from the following link:
+[Download Influensa APK](https://drive.google.com/file/d/1LFkP-gfT9IrCGhDaoYU7mGXfP9gPhHlh/view?usp=sharing)
 
 ## Getting Started
 

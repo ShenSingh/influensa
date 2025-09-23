@@ -133,4 +133,4 @@ For any inquiries or support, please contact:
 
 - **Name:** Gayashan Ashinshana
 - **Email:** gayashan9090@gmail.com
-- **LinkedIn:** [linkedin.com/in/gayashanashinshana](https://linkedin.com/in/gayashanashinshana)
+- **LinkedIn:** [linkedin.com/in/gayashan-ashinshana](https://www.linkedin.com/in/gayashan-ashinshana/)
